@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f6f1">
+<title>Sonelire · Letter Practice</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap">
+<style>
+:root{color-scheme:light;--bg:#f7f6f1;--paper:#fff;--ink:#223b35;--muted:#50675e;--line:#d8e1d8;--accent:#315e50;--soft:#e4eee7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Andika,Arial,sans-serif;-webkit-tap-highlight-color:transparent}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:3px solid #2678ae;outline-offset:3px}button:disabled{opacity:.38;cursor:default}main{max-width:1120px;margin:auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:14px;padding: max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.brand{font-size:1.4rem;font-weight:700;letter-spacing:-.04em;line-height:1.2}.subtitle{font-size:.83rem;color:var(--muted)}.options{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.modes{display:flex;gap:3px;background:#e9eae3;padding:4px;border-radius:14px}.modes button,.utility{border:1px solid transparent;background:transparent;border-radius:10px;padding:8px 13px;min-height:44px;font-size:.94rem}.modes button[aria-pressed=true]{background:var(--paper);border-color:var(--line);font-weight:700}.utility{border-color:var(--line);background:var(--paper)}.utility[aria-pressed=true]{background:var(--soft);border-color:#8da99a}.card{flex:1;min-height:260px;background:var(--paper);border:1px solid var(--line);border-radius:24px;display:grid;place-items:center;position:relative;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}.letter{font-family:Andika,Arial,sans-serif;font-weight:400;font-size:clamp(9rem, min(43vw,57vh), 30rem);line-height:1.15;color:#182c25;display:block;padding:0 .12em .10em;text-align:center}.counter{position:absolute;top:14px;right:19px;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}.navigation{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}.nav{min-height:58px;padding:10px 20px;border:1px solid var(--line);border-radius:14px;background:var(--paper);font-size:1.1rem;font-weight:700}.next{background:var(--accent);border-color:var(--accent);color:white}.restart{min-height:48px;border:0;background:transparent;text-decoration:underline;text-underline-offset:4px;padding:8px;color:var(--muted);font-size:.95rem}.help{text-align:center;color:var(--muted);font-size:.86rem;margin:0}.fontnotice{font-size:.8rem;color:#76531a;text-align:center;margin:0}.fontnotice[hidden]{display:none}body.focus main{max-width:none;padding:0;gap:0}body.focus header,body.focus .navigation,body.focus .help,body.focus .fontnotice,body.focus .counter{display:none}body.focus .card{border:0;border-radius:0;min-height:100vh;min-height:100dvh;touch-action:none}body.focus .letter{font-size:clamp(10rem,min(58vw,70vh),36rem)}.exit{display:none;position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));background:#f7f6f1;border:1px solid #d8e1d8;border-radius:10px;min-height:44px;padding:6px 12px;font-size:.8rem;color:#50675e}body.focus .exit{display:block} @media(max-width:560px){main{gap:10px}.options{width:100%}.modes{flex:1}.modes button{flex:1;padding:7px 9px}.utility{padding:7px 10px}.card{border-radius:18px;min-height:200px}.navigation{gap:6px}.nav{padding:8px;font-size:1rem}.restart{font-size:.82rem}.help{font-size:.77rem}}@media(orientation:landscape) and (max-height:520px){main{gap:6px;padding:8px 12px}.card{min-height:130px}.nav{min-height:44px}.help{display:none}.letter{font-size:clamp(5rem,48vh,15rem)}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div><div class="brand">sonelire</div><div class="subtitle">Letter practice · Parent-led</div></div>
+<div class="options">
+<div class="modes" role="group" aria-label="Letter case">
+<button type="button" data-mode="upper" aria-pressed="true">ABC</button>
+<button type="button" data-mode="lower" aria-pressed="false">abc</button>
+<button type="button" data-mode="mixed" aria-pressed="false">Aa mixed</button>
+</div>
+<button class="utility" id="shuffle" type="button" aria-pressed="true">Shuffle: on</button>
+<button class="utility" id="focus" type="button">Focus mode</button>
+</div>
+</header>
+<section class="card" id="card" aria-label="Current letter card">
+<span class="counter" id="counter"></span>
+<span class="letter" id="letter" aria-live="polite" aria-atomic="true"></span>
+<button class="exit" id="exit" type="button">Exit focus</button>
+</section>
+<nav class="navigation" aria-label="Practice navigation">
+<button class="nav" id="prev" type="button">← Previous</button>
+<button class="restart" id="restart" type="button">Start over</button>
+<button class="nav next" id="next" type="button">Next →</button>
+</nav>
+<p class="help">Say or ask for the letter name and sound. Swipe left/right or use the arrow keys to move between letters. Focus mode hides the practice controls.</p>
+<p class="fontnotice" id="fontnotice" hidden>Andika could not load. Connect to the internet or install Andika locally for the intended letter shapes.</p>
+</main>
+<script>
+'use strict';
+const upper=Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+const lower=upper.map(x=>x.toLowerCase());
+const $=id=>document.getElementById(id);
+let mode='upper', shuffled=true, deck=[], index=0, startX=null,startY=null, ignoreClickUntil=0;
+function newDeck(){
+  deck=mode==='upper'?[...upper]:mode==='lower'?[...lower]:upper.flatMap((x,i)=>[x,lower[i]]);
+  if(shuffled){for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}}
+  index=0;render();
+}
+function render(){
+  $('letter').textContent=deck[index];
+  $('counter').textContent=`${index+1} / ${deck.length}`;
+  $('prev').disabled=index===0;
+  $('next').textContent=index===deck.length-1?'Practice again ↻':'Next →';
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+  $('shuffle').setAttribute('aria-pressed',String(shuffled));
+  $('shuffle').textContent=`Shuffle: ${shuffled?'on':'off'}`;
+}
+function next(){if(index<deck.length-1){index++;render()}else newDeck()}
+function prev(){if(index>0){index--;render()}}
+function focusMode(on){document.body.classList.toggle('focus',on);if(on){$('exit').focus({preventScroll:true})}else{$('focus').focus({preventScroll:true})}}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{if(mode!==b.dataset.mode){mode=b.dataset.mode;newDeck()}}));
+$('shuffle').addEventListener('click',()=>{shuffled=!shuffled;newDeck()});
+$('restart').addEventListener('click',newDeck);
+$('next').addEventListener('click',next);
+$('prev').addEventListener('click',prev);
+$('focus').addEventListener('click',()=>focusMode(true));
+$('exit').addEventListener('click',()=>focusMode(false));
+$('card').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;startX=e.clientX;startY=e.clientY;});
+$('card').addEventListener('pointercancel',()=>{startX=startY=null});
+$('card').addEventListener('pointerup',e=>{if(startX===null)return;const dx=e.clientX-startX,dy=e.clientY-startY;startX=startY=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.5){ignoreClickUntil=Date.now()+450;dx<0?next():prev()}});
+$('card').addEventListener('click',e=>{if(e.target.closest('button')||Date.now()<ignoreClickUntil)return;if(document.body.classList.contains('focus'))next()});
+document.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey||e.repeat)return;if(e.key==='ArrowRight'){e.preventDefault();next()}else if(e.key==='ArrowLeft'){e.preventDefault();prev()}else if(e.key==='Escape'&&document.body.classList.contains('focus')){focusMode(false)}else if(e.code==='Space'&&!e.target.closest('button')){e.preventDefault();next()}});
+newDeck();
+// No local storage, cookies, accounts, tracking or audio. Only the font stylesheet is fetched externally.
+if(document.fonts){document.fonts.load('400 48px Andika','abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ').then(faces=>{if(!faces.length){$('fontnotice').hidden=false}}).catch(()=>{$('fontnotice').hidden=false});}
+</script>
+</body>
+</html>
