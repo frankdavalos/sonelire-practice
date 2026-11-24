@@ -6,6 +6,30 @@
 
 Sonelire Practice is a simple way to help a child learn the letters of the alphabet and the sounds they represent. An adult asks questions, models correct answers during practice, and records responses during occasional letter checks. The website does not listen to the child or play audio.
 
+
+## New in v2.1: use your phone as the scoring sheet
+
+You can use the digital companion instead of paper. The child sees the letter on the iPad, while you record responses privately on a phone. Both devices need access to the hosted site. No account is required.
+
+1. On the iPad select the learner, **Assess**, the skill, case and order, then **Prepare check**.
+2. Select **Phone companion QR**. On your phone, open the Camera app and scan the QR code. Open the link. Confirm the form ID and first letter.
+3. Select **Begin check** on the iPad. Ask the child to name the letter or produce the chosen familiar sound. Do not reveal the answer.
+4. Check that the item on your phone matches the iPad letter. Tap **Correct**, **Incorrect**, **Unsure / no response**, or **Skip** on the phone. The phone advances automatically except at the final item; tap the iPad separately to advance its letter.
+5. If the devices become out of step, use **Previous**, **Next**, or the numbered item grid on your phone to realign them. Use **Clear this mark** or **Undo last change** to correct an entry. Marks and position are saved locally on the phone when storage is available. Undo history is not retained after reload.
+6. When the presentation is complete, advance from the last letter on the iPad to **Enter results**. If stopping early, pause and end presentation; leave unreached letters unmarked on the phone.
+7. On the phone choose **Prepare results transfer**. You can return to edit any marks before transferring.
+8. Return the marks using one of these options:
+   - **QR:** Open the iPad Camera, scan the phone's results QR and open the link in the same browser context as your unfinished check. The app opens **Enter results** with the code ready for review.
+   - **Code:** Copy the code and transfer it privately (for example with a shared clipboard, if configured). On the original iPad scoring screen expand **Import phone companion results** and paste it into the text box.
+   - **File:** Choose **Save code file** on the phone, transfer the small text file privately, then choose it in the iPad import panel.
+9. Select **Review and import marks**. Sonelire checks the form, order and response count, rejecting wrong-form codes or marks for letters not shown. If replacing conflicting entries, confirm only if intended. Review the populated marks, then select **Save results**.
+10. Use **Practice letters needing work** as before. Once the results are saved on the iPad, clear the companion record on your phone using **Clear this companion session**.
+
+**Important:** The two devices do not advance each other. Results codes and QR links are not encrypted. Treat them as private. Avoid sharing them in public messages. The phone companion does not identify the learner; the iPad attaches the validated marks to its own existing session.
+
+If the iPad Camera opens a browser without your draft, return to the original browser and paste the code or import the text file instead. A home-screen installation and Safari can have separate storage. If the companion is interrupted, scan the original QR again (the paused iPad screen has **Show phone companion QR again**). If local storage is unavailable, keep the phone page open. You can always use manual scoring or a paper companion sheet.
+
+
 ## 1. Get started
 
 Open the website on an iPad, phone or computer. Choose **Child 1** or **Child 2** from the **Learner** menu at the top of the screen. Use the same profile for each child every time, so their results remain separate.
