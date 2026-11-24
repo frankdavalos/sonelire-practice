@@ -1,0 +1,10 @@
+// Run from repository root: node --test tests/protocol.test.js
+const test=require('node:test'),assert=require('node:assert/strict');require('../companion-protocol.js');const P=globalThis.CompanionProtocol;
+const d={id:'form-123',skill:'name',case:'mixed',seq:[...'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'].reverse(),status:'scoring',shown:52,learner:'2'};
+const scores=Object.fromEntries(d.seq.map((_,i)=>[i,['correct','miss','unsure','skip'][i%4]]));
+test('form round trip excludes learner and preserves sequence',()=>{const code=P.encodeForm(d);assert.deepEqual(P.decodeForm(code),{id:d.id,skill:d.skill,case:d.case,seq:d.seq});assert.ok(!code.includes('learner'));assert.equal(new URL(P.formUrl(d,'https://example.com/sonelire-practice/sonelire-practice.html')).pathname,'/sonelire-practice/companion.html');});
+test('complete import',()=>assert.deepEqual(P.validateImport(d,P.encodeResults(d,scores)),scores));
+test('reject wrong form, order, skill, duplicate letters, malformed marks',()=>{const code=P.encodeResults(d,scores);for(const bad of [{...d,id:'other'},{...d,skill:'sound'},{...d,seq:[...d.seq].reverse()}])assert.throws(()=>P.validateImport(bad,code));assert.throws(()=>P.encodeForm({...d,seq:Array(52).fill('A')}));assert.throws(()=>P.decodeResults(code.slice(0,-1)+'X'));});
+test('early termination validates exact shown prefix',()=>{const part={...d,shown:3};const marks={0:'correct',1:'miss',2:'skip'};assert.deepEqual(P.validateImport(part,P.encodeResults(d,marks)),marks);assert.throws(()=>P.validateImport(part,P.encodeResults(d,{0:'correct',2:'skip'})));assert.throws(()=>P.validateImport(part,P.encodeResults(d,{...marks,3:'correct'})));});
+test('no import during presentation',()=>assert.throws(()=>P.validateImport({...d,status:'present'},P.encodeResults(d,scores))));
+test('return QR URL carries only fragment',()=>{const u=new URL(P.resultUrl(P.encodeResults(d,scores),'https://example.com/sonelire-practice/companion.html'));assert.equal(u.pathname,'/sonelire-practice/sonelire-practice.html');assert.equal(u.search,'');assert.match(u.hash,/^#sonelire-result=SON1R\./)});
