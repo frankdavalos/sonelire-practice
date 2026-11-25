@@ -26,18 +26,18 @@ Version 2 adds a complete **Assess → Review → Practice → Reassess** workfl
 | Results | View the latest recorded performance for each letter, case and skill. |
 | Targeted practice | Generate a deck of letters marked incorrect or unsure, at most five at a time, with letters that slipped back first. |
 | Local persistence | Save results and resume one unfinished check in the same browser. |
-| Home Screen install | Add the site to the iPad Home Screen from Safari; it opens full screen and asks the iPad to keep its data. |
+| Home Screen install | The site can be added to the iPad Home Screen, but results QR links can't reach it, so the iPad is used in Safari ([ADR 0004](docs/adr/0004-use-safari-on-the-ipad-not-the-home-screen-app.md)). |
 | Check log | At a glance (letters correct, the change since the previous check, Recent wins / Slipped back / Still learning, and ↑ / ↓ on the grid), Struggled before (Improved), each letter's history, and a Progress chart of letters correct after each check. |
 | Backup file | Export both learners' results and saved checks to a file, and restore from one after a preview. |
 | Andika typography | Literacy-oriented letterforms with large, high-contrast text. |
 
 ## Quick start
 
-1. Open the [website](https://frankdavalos.github.io/sonelire-practice/sonelire-practice.html) and select **Child 1** or **Child 2**. On an iPad, add it to the Home Screen from Safari's Share menu and use it from there ([setup guide](HOW_TO_USE.md#install-on-the-ipad-home-screen-recommended)).
+1. Open the [website](https://frankdavalos.github.io/sonelire-practice/sonelire-practice.html) and select **Child 1** or **Child 2**. On an iPad, use it in Safari, not as a Home Screen app ([setup guide](HOW_TO_USE.md#use-safari-on-the-ipad)).
 2. Choose **Practice** for ordinary flashcards, or **Assess** to conduct a letter check.
 3. For a check, select the skill, case and order, then choose **Prepare check**. Choose **Phone companion QR** and scan with your phone, or print the companion sheet / copy the displayed order onto paper.
 4. Choose **Begin check**, ask the child for each letter name or familiar sound, and record responses privately on the phone or paper. Tap to advance the iPad separately after scoring each item.
-5. After the check, import phone marks (QR link, code or text file; in the Home Screen app use **Share results** on the phone, since QR links open only in Safari) or enter paper marks, review and save, then open **Results** and select the **Practice** button.
+5. After the check, import phone marks (QR link, code or text file) or enter paper marks, review and save, then open **Results** and select the **Practice** button.
 6. Reassess after practice to update the child's letter results.
 
 See the [step-by-step parent guide](HOW_TO_USE.md) for scoring, navigation, practice suggestions and troubleshooting.
@@ -47,7 +47,7 @@ See the [step-by-step parent guide](HOW_TO_USE.md) for scoring, navigation, prac
 Sonelire Practice stores its learner results and unfinished check in the browser's `localStorage`. There are no login accounts, application analytics, audio recordings, or server-side student records. The learner labels are fixed and anonymous.
 
 - Data is separate between browsers, devices and browser storage contexts; it does not synchronize. The phone companion stores its unfinished form separately. Transfer is explicit.
-- Clearing site data, using private browsing or browser storage eviction can cause records to be lost. Safari deletes a site's storage after 7 days without use; the iPad Home Screen app keeps its own count and the page requests persistent storage, which makes loss less likely but not impossible ([ADR 0003](docs/adr/0003-home-screen-install-without-a-service-worker.md)). The Home Screen app and Safari keep separate storage; move results between them with a Backup file. Regular backups to iCloud Drive or Files are the durability guarantee.
+- Clearing site data, using private browsing or browser storage eviction can cause records to be lost. Safari deletes a site's storage after 7 days of Safari use without opening it; the page requests persistent storage, which makes loss less likely but not impossible. The iPad is used in Safari, not as a Home Screen app, which keeps separate storage that results QR links can't reach ([ADR 0004](docs/adr/0004-use-safari-on-the-ipad-not-the-home-screen-app.md)). Regular backups to iCloud Drive or Files are the durability guarantee.
 - The companion can export and import one assessment’s marks. The Results tab can export a Backup file of both Learners’ Results and the Check log, and restore from one after a preview; the Unfinished check is not included. It reminds the adult to export one when a saved Check not yet backed up is more than 30 days old.
 - Andika is loaded from Google Fonts; this makes a third-party font request, but the application does not send assessment results to that service. Hosting providers may retain ordinary request logs.
 - Results are stored locally, not encrypted by the application, and are accessible to others using the same browser profile.
@@ -118,7 +118,7 @@ For a new issue or suggestion, use the repository's [Issues page](https://github
 
 Assessment links contain a form ID, skill, case and letter order, not learner labels. Results links also contain response marks in the URL fragment (not sent as part of the HTTP request). Codes and text files are not encrypted; keep them private. Browser history or other apps may retain links. Clear phone companion records with **Clear this companion session** once the iPad results are saved. No automatic deletion or synchronization is provided.
 
-The QR return uses the device’s native Camera app to open a link, not an in-page camera scanner. Use the same browser storage context as the active check; the iPad Home Screen app or a private tab has separate storage. Results QR links open only in Safari, so for a check in the Home Screen app use **Share results** (or the code or text file) and import it in the original scoring screen. If the QR opens the wrong context, do the same. Avoid editing the same assessment in multiple tabs. Phone and iPad navigation are independent.
+The QR return uses the device’s native Camera app to open a link, not an in-page camera scanner. Use the same browser storage context as the active check; a private tab or a Home Screen app has separate storage, and results QR links open only in Safari. If the QR opens the wrong context, use **Share results** (or the code or text file) and import it in the original scoring screen. Avoid editing the same assessment in multiple tabs. Phone and iPad navigation are independent.
 
 ## Testing
 
