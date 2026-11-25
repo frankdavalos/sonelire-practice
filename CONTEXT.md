@@ -1,0 +1,115 @@
+# Sonelire Practice
+
+An informal, adult-led alphabet tool: an adult **Checks** what a **Learner** knows, records **Marks**, and uses the resulting **Results** to build a targeted **Practice deck**. A phone **Companion** can stand in for the paper scoring sheet.
+
+## Language
+
+### Who and what is measured
+
+**Learner**:
+One of two fixed, anonymous profiles ("Child 1", "Child 2") whose Results are kept separate.
+_Avoid_: Child, student, user, profile
+
+**Skill**:
+What the adult asks for: the letter **name** or a familiar letter **sound**.
+_Avoid_: Mode, type
+
+**Case**:
+Which letterforms are in play: **uppercase**, **lowercase**, or **mixed** (both forms as separate items).
+_Avoid_: Deck type, alphabet
+
+### Checking
+
+**Check**:
+One adult-led, feedback-free presentation of a fixed letter sequence to a Learner for one Skill and Case.
+_Avoid_: Assessment, test, session, screening
+
+**Form**:
+The prepared, identified letter sequence for a Check (form ID, Skill, Case, order); never carries the Learner.
+_Avoid_: Sheet (unless meaning the printed copy), assessment form
+
+**Presentation**:
+The child-facing phase of a Check, showing one large letter at a time; pausing is a screen within it, not a separate phase.
+_Avoid_: Stimulus, display
+
+**Marking**:
+The adult-only phase of a Check after Presentation ends, in which Marks for shown letters are entered, imported, reviewed and saved.
+_Avoid_: Scoring, enter results
+
+**Shown count**:
+How many letters of the Form were actually displayed before Presentation ended; only these can be marked.
+_Avoid_: Progress, position
+
+**Mark**:
+The adult's recorded judgement for one shown letter: **Correct**, **Incorrect**, **Unsure** (unsure or no response), or **Skip** (not actually assessed).
+_Avoid_: Score, response, answer, miss
+
+**Unfinished check**:
+A Check that has begun but whose Marks are not yet saved; at most one exists across both Learners.
+_Avoid_: Draft, session, pending check
+
+### Outcomes
+
+**Result**:
+The latest saved Mark for one Learner, Skill and letter, with its date and Form ID.
+_Avoid_: Score, record, history
+
+**Needs practice**:
+A letter whose Result is Incorrect or Unsure.
+_Avoid_: Weak, failed, missed
+
+**Not assessed**:
+A letter with no Result, or whose only Result is Skip; neither a strength nor a weakness.
+_Avoid_: Unknown, unchecked
+
+**Practice deck**:
+An ordered set of letter cards for practice, either all letters of a Case or only those that Need practice.
+_Avoid_: Flashcards, lesson
+
+### Companion transfer
+
+**Companion**:
+The phone page that acts as a private scoring sheet for one Form.
+_Avoid_: Phone app, remote, controller
+
+**Companion record**:
+The Companion's locally stored Marks and position for one Form, independent of the Unfinished check.
+_Avoid_: Companion session, draft
+
+**Form code**:
+The versioned text encoding of a Form (`SON1A.…`) carried to the Companion in a QR link.
+_Avoid_: Assessment link, form URL
+
+**Results code**:
+The versioned text encoding of a Form plus Marks (`SON1R.…`) carried back by QR, pasted code or text file.
+_Avoid_: Return code, export
+
+**Import**:
+Validating a Results code against the Unfinished check and replacing its Marks.
+_Avoid_: Sync, merge, upload
+
+## Relationships
+
+- A **Learner** has at most one **Result** per **Skill** per letter; uppercase and lowercase are different letters.
+- A **Check** has exactly one **Form**, one **Learner**, one **Skill** and one **Case**.
+- A **Check** produces one **Mark** per shown letter (the first **Shown count** letters of the **Form**).
+- Saving a **Check** turns each **Mark** into the **Learner's** **Result** for that letter, except that **Skip** never overwrites an existing **Result**.
+- A **Practice deck** for "Needs practice" is derived from **Results**; practising never changes **Results**.
+- A **Companion record** belongs to exactly one **Form** and knows nothing about the **Learner**.
+- An **Import** succeeds only when the **Results code's** **Form** matches the **Unfinished check's** **Form** and has no **Marks** beyond the **Shown count**.
+
+## Example dialogue
+
+> **Dev:** "If the parent ends Presentation after 10 letters, does the Results code still carry 52 Marks?"
+> **Domain expert:** "It carries 52 positions, but only the first 10 (the Shown count) may hold Marks. A Mark beyond that means the phone and iPad got out of step, so Import rejects it."
+> **Dev:** "And a Skip on letter `b` when `b` already has an Incorrect Result?"
+> **Domain expert:** "The Result stays Incorrect, so `b` still Needs practice. Skip means it wasn't assessed, not that it was learned."
+
+## Flagged ambiguities
+
+- "assessment", "letter check" and "session" were used for the same thing. Resolved: **Check**. The **Assess** tab name and the README's "assessment" are UI/marketing wording.
+- "score" (code: `scores`, `saveScores`, `setScore`) and "mark" (UI, protocol) were used for the same thing. Resolved: **Mark**. "Score" is avoided.
+- "draft" (code: `db.draft`) and "unfinished check" (UI). Resolved: **Unfinished check**.
+- "miss" (stored value) and "Incorrect" (UI, wire char `I`). Resolved: **Incorrect**. The stored value `'miss'` remains for compatibility with existing localStorage data until a migration is decided.
+- "scoring" (stored status, `startScoring`) and "Enter results" (UI) name the same phase. Resolved: **Marking**. The stored statuses `'present'` and `'paused'` both mean **Presentation**; only Presentation and Marking are real phases.
+- "session" was also used for the phone's local state ("Clear this companion session"). Resolved: that is the **Companion record**, distinct from the **Unfinished check**.
