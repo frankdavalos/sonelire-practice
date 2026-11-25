@@ -62,6 +62,10 @@ _Avoid_: Result, history entry, session log
 Every Check record saved on this device, kept beside the Results under its own storage key; the source for looking back over time.
 _Avoid_: History (as a synonym for Results), audit log
 
+**Backup file**:
+A downloaded, versioned JSON copy of both Learners' Results and the whole Check log (`sonelire-backup-<YYYY-MM-DD>.json`), never the Unfinished check. Restoring one replaces all Results and the Check log after a preview; a damaged or wrong file is refused with nothing changed.
+_Avoid_: Export (alone), sync, snapshot
+
 **Needs practice**:
 A letter whose Result is Incorrect or Unsure.
 _Avoid_: Weak, failed, missed
@@ -108,6 +112,7 @@ _Avoid_: Sync, merge, upload
 - Saving a **Check** turns each **Mark** into the **Learner's** **Result** for that letter, except that **Skip** never overwrites an existing **Result**.
 - Saving a **Check** also adds one **Check record** to the **Check log**; saving the same **Form** again replaces its **Check record**. A discarded **Unfinished check** is never recorded.
 - **Results** keep only the latest **Mark**; the **Check log** keeps every saved **Mark**, so it can show what a **Learner** struggled with before.
+- A **Backup file** holds **Results** and **Check records** for both **Learners**; restoring it leaves the **Unfinished check** and the selected **Learner** alone.
 - A **Practice deck** for "Needs practice" is derived from **Results**; practising never changes **Results**.
 - A **Companion record** belongs to exactly one **Form** and knows nothing about the **Learner**.
 - An **Import** succeeds only when the **Results code's** **Form** matches the **Unfinished check's** **Form** and has no **Marks** beyond the **Shown count**.

@@ -141,3 +141,14 @@ test("the last progress point equals the Today grid's Correct total when both ar
   for(const c of ['upper','lower','mixed'])
     assert.equal(L.progress(log,'1','name',c).at(-1).correct,R.summarize(results,'1','name',c).correct,c);
 });
+
+test('the last backup time survives recording a Check, the stored form and restoring',()=>{
+  assert.equal(L.empty().lastBackup,null);
+  let log=L.withLastBackup(L.empty(),'2026-11-20T08:00:00.000Z');
+  log=L.record(log,completed('F-1',[{letter:'A',mark:'correct'}]),'2026-11-24T10:00:00.000Z');
+  assert.equal(log.lastBackup,'2026-11-20T08:00:00.000Z','recording a Check never resets it');
+  const stored=JSON.parse(JSON.stringify(L.toStored(log)));
+  assert.equal(stored.lastBackup,'2026-11-20T08:00:00.000Z');
+  assert.equal(L.restore(stored).lastBackup,'2026-11-20T08:00:00.000Z');
+  assert.equal(L.restore({...stored,lastBackup:7}).lastBackup,null,'an unreadable time restores as never');
+});
