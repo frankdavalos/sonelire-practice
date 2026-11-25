@@ -34,7 +34,7 @@
     return {formId:c.form.id,marks,conflicts};
   }
   function applyImport(c,preview){inPhase(c,'marking');if(preview.formId!==c.form.id)throw Error('This code belongs to a different assessment form.');return make({...c,marks:preview.marks});}
-  /* v1 db.draft shape (docs/adr/0001): status 'present'|'paused'|'scoring', scores use stored Mark values. */
+  /* v1 stored draft shape (docs/adr/0001; loaded and saved by storage.js): status 'present'|'paused'|'scoring', scores use stored Mark values. */
   function restore(s){const marks={};for(const [i,v] of Object.entries(s.scores||{}))marks[i]=V.fromStored(v);return make({learner:s.learner,form:{id:s.id,skill:s.skill,case:s.case,seq:s.seq},phase:s.status==='scoring'?'marking':'presentation',position:s.position,shownCount:s.shown,marks});}
   function toStored(c){const scores={};for(const [i,m] of Object.entries(c.marks))scores[i]=V.toStored(m);return {learner:c.learner,case:c.form.case,skill:c.form.skill,seq:[...c.form.seq],id:c.form.id,position:c.position,shown:c.shownCount,status:c.phase==='marking'?'scoring':'present',scores};}
   root.SonelireCheck=Object.freeze({prepareForm,begin,currentLetter,next,back,endPresentation,mark,markRemainingCorrect,clearMarks,markedCount,canComplete,complete,previewImport,applyImport,restore,toStored});

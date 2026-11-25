@@ -61,7 +61,7 @@ This is a lightweight companion prototype for the larger Sonelire literacy asses
 
 ## Run or deploy
 
-The application is a small static website: `sonelire-practice.html`, `companion.html`, the plain scripts `vocabulary.js`, `companion-protocol.js`, `check.js` and `results.js`, and `libs/qr.js`. The QR encoder is bundled locally with license notices in `libs/QR-LICENSE.txt`. There is no build step, npm installation, API or database server.
+The application is a small static website: `sonelire-practice.html`, `companion.html`, the plain scripts `vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js` and `storage.js`, and `libs/qr.js`. The QR encoder is bundled locally with license notices in `libs/QR-LICENSE.txt`. There is no build step, npm installation, API or database server.
 
 To run locally from the repository directory:
 
@@ -73,11 +73,11 @@ Open <http://localhost:8000/sonelire-practice.html>. For use on another device, 
 
 To publish updates using the existing GitHub Pages deployment:
 
-1. If any script changed (`vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js` or `libs/qr.js`), bump the release token: the `?v=` value on every `<script src>` in both `sonelire-practice.html` and `companion.html`, for example `?v=2.1.1` to `?v=2.1.2`. GitHub Pages lets browsers cache each file for 10 minutes, so without a new token a new page can run with an old cached script. `tests/release-token.test.js` checks that every script carries the same token. It can't tell whether you bumped it.
+1. If any script changed (`vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js`, `storage.js` or `libs/qr.js`), bump the release token: the `?v=` value on every `<script src>` in both `sonelire-practice.html` and `companion.html`, for example `?v=2.1.1` to `?v=2.1.2`. GitHub Pages lets browsers cache each file for 10 minutes, so without a new token a new page can run with an old cached script. `tests/release-token.test.js` checks that every script carries the same token. It can't tell whether you bumped it.
 2. Commit and push. The pre-push hook (see [Testing](#testing)) runs the suite first.
 
 ```bash
-git add sonelire-practice.html companion.html vocabulary.js companion-protocol.js check.js results.js libs/ README.md HOW_TO_USE.md tests/
+git add sonelire-practice.html companion.html vocabulary.js companion-protocol.js check.js results.js storage.js libs/ README.md HOW_TO_USE.md tests/
 git commit -m "Update Sonelire Practice"
 git push
 ```
@@ -93,7 +93,8 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`vocabulary.js`](vocabulary.js) | Shared Cases and Marks (labels, keys, wire and stored values) |
 | [`companion-protocol.js`](companion-protocol.js) | Versioned Form and Results code encoding, companion links, QR rendering |
 | [`check.js`](check.js) | Check lifecycle: Form preparation, Presentation, Marking, Import, save |
-| [`results.js`](results.js) | Records a saved Check into each Learner's Results |
+| [`results.js`](results.js) | Each Learner's Results: recording a saved Check, letter status and totals, Needs practice letters, clearing |
+| [`storage.js`](storage.js) | Loads and saves the Learner, Results and Unfinished check through a storage adapter (browser or in-memory) |
 | [`CONTEXT.md`](CONTEXT.md), [`docs/adr/`](docs/adr/) | Domain glossary and architecture decisions |
 | `libs/` | Bundled QR encoder and license notices |
 | `tests/` | Module tests and browser smoke test |
@@ -130,4 +131,4 @@ Run the suite with `scripts/test.sh`. It uses `.venv/bin/python` when present; s
 
 The `.githooks/pre-push` hook runs `scripts/test.sh` and blocks the push if it fails. Pushing to `main` deploys GitHub Pages, so this hook is the deploy gate. It tests the working tree, so commit or set aside unrelated edits before pushing. `git push --no-verify` skips it; use that only as a deliberate exception.
 
-The browser tests use in-memory HTML and mocked storage, not a deployed server. Real-device Camera, browser storage and deployed Pages testing remain necessary.
+The browser tests load the pages from the working tree at their published URL (Playwright routing, no network) with real browser storage, not a deployed server. Real-device Camera, browser storage and deployed Pages testing remain necessary.

@@ -109,7 +109,7 @@ _Avoid_: Sync, merge, upload
 
 - "assessment", "letter check" and "session" were used for the same thing. Resolved: **Check**. The **Assess** tab name and the README's "assessment" are UI/marketing wording.
 - "score" (code: `scores`, `saveScores`, `setScore`) and "mark" (UI, protocol) were used for the same thing. Resolved: **Mark**. "Score" is avoided.
-- "draft" (code: `db.draft`) and "unfinished check" (UI). Resolved: **Unfinished check**.
+- "draft" (stored field `draft`) and "unfinished check" (UI). Resolved: **Unfinished check**. The stored field keeps its name; `storage.js` exposes it as `unfinishedCheck`.
 - "miss" (stored value) and "Incorrect" (UI, wire char `I`). Resolved: **Incorrect**. The stored value `'miss'` remains for compatibility with existing localStorage data until a migration is decided.
 - "scoring" (stored status, `startScoring`) and "Enter results" (UI) name the same phase. Resolved: **Marking**. The stored statuses `'present'` and `'paused'` both mean **Presentation**; only Presentation and Marking are real phases.
 - "session" was also used for the phone's local state ("Clear this companion session"). Resolved: that is the **Companion record**, distinct from the **Unfinished check**.
