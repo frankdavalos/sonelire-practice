@@ -1,6 +1,6 @@
 """Backup file: export everything saved from the Results tab, and restore it after a preview."""
 import json
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 from steps import check_list, present, save_check, text
 
@@ -23,7 +23,8 @@ def test_export_downloads_both_learners_results_and_check_log_and_records_the_la
     page.click('#tabResults')
     assert text(page, '#lastBackup') == 'Last backup: never'
     name, backup = export_backup(page)
-    assert name == f'sonelire-backup-{date.today().isoformat()}.json'
+    exported_on = datetime.fromisoformat(backup['exportedAt']).astimezone().date()
+    assert name == f'sonelire-backup-{exported_on.isoformat()}.json', 'named for the local date'
     assert set(backup) == {'format', 'version', 'exportedAt', 'results', 'checks'}, 'no Unfinished check or selected Learner'
     assert (backup['format'], backup['version']) == ('sonelire-backup', 1)
     assert backup['results']['1']['name']['B']['status'] == 'miss' and backup['results']['2']['sound']['A']['status'] == 'correct'
