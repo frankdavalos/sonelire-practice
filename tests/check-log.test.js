@@ -167,3 +167,30 @@ test('a Check ended after 10 of 26 letters records only those 10 letters, so the
   for(const letter of [...'ABCDEFGHIJ'])assert.equal(L.letterHistory(log,'1','name',letter).length,1);
   for(const letter of [...'KLMNOPQRSTUVWXYZ'])assert.deepEqual(L.letterHistory(log,'1','name',letter),[],`${letter} was never shown`);
 });
+
+test("clearing a Learner, Skill and Case removes those letters' Marks, deletes Check records left empty, and leaves the rest alone",()=>{
+  const log=logOf(
+    ['UP',day(1),[{letter:'A',mark:'incorrect'},{letter:'B',mark:'correct'}]],
+    ['MIX',day(2),[{letter:'A',mark:'correct'},{letter:'a',mark:'incorrect'},{letter:'b',mark:'skip'}],{c:'mixed'}],
+    ['CHILD-2',day(3),[{letter:'A',mark:'incorrect'}],{learner:'2'}],
+    ['SOUND',day(4),[{letter:'A',mark:'incorrect'}],{skill:'sound'}]);
+  const cleared=L.clear(log,'1','name','upper');
+  assert.deepEqual(L.checks(cleared,'1','name','upper'),[]);
+  assert.deepEqual(L.struggles(cleared,'1','name','upper'),{stillNeedsPractice:[],improved:[]});
+  assert.deepEqual(L.letterHistory(cleared,'1','name','A'),[]);
+  assert.deepEqual(L.checks(cleared,'1','name','lower').map(c=>[c.formId,c.shownCount,c.needsPractice,c.skip]),[['MIX',2,1,1]],
+    'the mixed Check keeps its lowercase Marks');
+  assert.deepEqual(cleared.checks.map(r=>r.formId),['MIX','CHILD-2','SOUND'],'the uppercase-only Check record is deleted');
+  assert.deepEqual(L.checks(cleared,'2','name','upper'),L.checks(log,'2','name','upper'),'Child 2 is a different Learner');
+  assert.deepEqual(L.checks(cleared,'1','sound','upper'),L.checks(log,'1','sound','upper'),'sounds is a different Skill');
+  assert.equal(L.checks(log,'1','name','upper').length,2,'the original Check log is unchanged');
+});
+
+test('a cleared Check log keeps its last backup time and restores from its stored form unchanged',()=>{
+  const log=L.withLastBackup(logOf(
+    ['MIX',day(1),[{letter:'A',mark:'correct'},{letter:'a',mark:'incorrect'}],{c:'mixed'}],
+    ['UP',day(2),[{letter:'B',mark:'incorrect'}]]),'2026-11-20T08:00:00.000Z');
+  const cleared=L.clear(log,'1','name','upper');
+  assert.equal(cleared.lastBackup,'2026-11-20T08:00:00.000Z');
+  assert.deepEqual(L.restore(JSON.parse(JSON.stringify(L.toStored(cleared)))),cleared);
+});

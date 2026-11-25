@@ -55,7 +55,7 @@ The latest saved Mark for one Learner, Skill and letter, with its date and Form 
 _Avoid_: Score, record, history
 
 **Check record**:
-The permanent, dated record of one saved Check: its Learner, Skill, Case, Form ID, Shown count and the Mark for each shown letter, Skips included. Never changed after saving.
+The permanent, dated record of one saved Check: its Learner, Skill, Case, Form ID, Shown count and the Mark for each shown letter, Skips included. Never changed after saving, except that **Clear these results** removes the cleared letters' Marks from it, and deletes it if no Marks are left.
 _Avoid_: Result, history entry, session log
 
 **Check log**:

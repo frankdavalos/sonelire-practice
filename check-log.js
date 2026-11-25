@@ -1,4 +1,4 @@
-/* Sonelire Check log: one permanent Check record per saved Check, and the last backup time (see CONTEXT.md, docs/adr/0002).
+/* Sonelire Check log: one Check record per saved Check (changed only by Clear these results), and the last backup time (see CONTEXT.md, docs/adr/0002).
    A Check record is {date, learner, skill, case, formId, shownCount, marks:[{letter, mark}]} for the shown letters. */
 (function (root) {
   'use strict';
@@ -58,6 +58,15 @@
       return {date:r.date,formId:r.formId,correct:letters.filter(l=>standing.get(l)==='correct').length,total:letters.length};
     });
   }
+  /* Returns a new Check log without the Case's letters' Marks in this Learner and Skill's Check records; records left with no Marks are deleted. */
+  function clear(log,learner,skill,c){
+    const inCase=new Set(V.lettersFor(c));
+    return make(log.checks.flatMap(r=>{
+      if(r.learner!==learner||r.skill!==skill)return [r];
+      const marks=r.marks.filter(m=>!inCase.has(m.letter));
+      return marks.length?[{...r,shownCount:marks.length,marks}]:[];
+    }),log.lastBackup);
+  }
   const toStored=log=>({version:1,lastBackup:log.lastBackup,checks:log.checks.map(r=>({...r,marks:r.marks.map(m=>({...m}))}))});
   const isText=s=>typeof s==='string'&&s.length>0;
   const isCase=c=>{try{V.lettersFor(c);return true}catch(e){return false}};
@@ -68,5 +77,5 @@
     if(stored?.version!==1||!Array.isArray(stored.checks)||!stored.checks.every(readable))return empty();
     return make(stored.checks,isText(stored.lastBackup)?stored.lastBackup:null);
   }
-  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,toStored,restore});
+  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,clear,toStored,restore});
 })(globalThis);
