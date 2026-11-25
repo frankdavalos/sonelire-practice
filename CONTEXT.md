@@ -74,9 +74,29 @@ _Avoid_: Weak, failed, missed
 A letter whose latest non-Skip Mark in the Check log is Correct after an earlier Incorrect or Unsure. A letter that slips back to Incorrect or Unsure Needs practice again.
 _Avoid_: Fixed, mastered, learned
 
-**Not assessed**:
-A letter with no Result, or whose only Result is Skip; neither a strength nor a weakness.
-_Avoid_: Unknown, unchecked
+**Standing**:
+A letter's latest non-Skip Mark in the Check log for one Learner and Skill, or none if it has only Skips or no Marks.
+_Avoid_: Status, current score
+
+**Latest change**:
+How each letter's Standing moved in the latest Check that includes any of the Case's letters, compared with its Standing just before that Check; the only notion of "recent" (no clock or date cutoff).
+_Avoid_: Last 30 days, recent window, trend
+
+**Recent win**:
+A letter whose Standing became Correct in the Latest change after being Incorrect or Unsure; the newest part of Improved, marked ↑ on the grid.
+_Avoid_: Recently improved, newly correct, progress
+
+**Slipped back**:
+A letter whose Standing became Incorrect or Unsure in the Latest change after being Correct; marked ↓ on the grid.
+_Avoid_: Revisit, regressed, forgot
+
+**Still learning**:
+A letter that Needs practice and did not just Slip back, whether it struggled before or was first checked in the latest Check.
+_Avoid_: Struggling, weak, still needs practice (Struggled before's wider list)
+
+**Not checked yet**:
+A letter with no Result, or whose only Result is Skip (so no Standing); neither a strength nor a weakness.
+_Avoid_: Not assessed, yet to check, unchecked, unknown
 
 **Practice deck**:
 An ordered set of letter cards for practice, either all letters of a Case or only those that Need practice.
@@ -113,6 +133,8 @@ _Avoid_: Sync, merge, upload
 - Saving a **Check** also adds one **Check record** to the **Check log**; saving the same **Form** again replaces its **Check record**. A discarded **Unfinished check** is never recorded.
 - **Results** keep only the latest **Mark**; the **Check log** keeps every saved **Mark**, so it can show what a **Learner** struggled with before.
 - A **Backup file** holds **Results** and **Check records** for both **Learners**; restoring it leaves the **Unfinished check** and the selected **Learner** alone.
+- Within one Learner, Skill and Case, each letter is exactly one of **Recent win**, Correct (no group), **Slipped back**, **Still learning** or **Not checked yet**, decided by its **Standing** before and after the **Latest change**; every letter that Needs practice is either **Slipped back** or **Still learning**.
+- With only one Check there is no **Latest change** to compare against: no **Recent wins**, no **Slipped back**, and every letter that Needs practice is **Still learning**.
 - A **Practice deck** for "Needs practice" is derived from **Results**; practising never changes **Results**.
 - A **Companion record** belongs to exactly one **Form** and knows nothing about the **Learner**.
 - An **Import** succeeds only when the **Results code's** **Form** matches the **Unfinished check's** **Form** and has no **Marks** beyond the **Shown count**.
@@ -132,3 +154,4 @@ _Avoid_: Sync, merge, upload
 - "miss" (stored value) and "Incorrect" (UI, wire char `I`). Resolved: **Incorrect**. The stored value `'miss'` remains for compatibility with existing localStorage data until a migration is decided.
 - "scoring" (stored status, `startScoring`) and "Enter results" (UI) name the same phase. Resolved: **Marking**. The stored statuses `'present'` and `'paused'` both mean **Presentation**; only Presentation and Marking are real phases.
 - "session" was also used for the phone's local state ("Clear this companion session"). Resolved: that is the **Companion record**, distinct from the **Unfinished check**.
+- "Not assessed" (glossary, stats row, code: `notAssessed`), "Not checked" (grid cells) and "Yet to check" (mockups) named the same letters. Resolved: **Not checked yet**, matching **Check**. The `notAssessed` field may keep its name.
