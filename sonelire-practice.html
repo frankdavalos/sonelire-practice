@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f7f6f1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sonelire">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Sonelire · Letter Practice v2.1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap">
 <style>
@@ -63,6 +68,8 @@ let storage=Storage.local(),logStorage=Storage.local(Storage.LOG_KEY),saved=null
 try{storage.read();logStorage.read()}catch(e){storage=Storage.memory();logStorage=Storage.memory();$('storageNotice').hidden=false}
 try{saved=Storage.load(storage)}catch(e){$('storageNotice').hidden=false}
 log=Storage.loadLog(logStorage);
+/* Safari only keeps a grant to persist storage while it is asked on every open (docs/adr/0003). */
+navigator.storage?.persist?.().catch(()=>{});
 let {learner,results,unfinishedCheck}=saved||Storage.load(Storage.memory()),check=null,lastSaved=null;try{if(unfinishedCheck)check=Check.restore(unfinishedCheck)}catch(e){}
 function persist(){try{lastSaved=Storage.save(storage,{learner,results,unfinishedCheck:check?Check.toStored(check):null})}catch(e){$('storageNotice').hidden=false}}
 if(saved)persist();
