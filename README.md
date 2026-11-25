@@ -61,7 +61,7 @@ This is a lightweight companion prototype for the larger Sonelire literacy asses
 
 ## Run or deploy
 
-The application is a small static website: `sonelire-practice.html`, `companion.html`, `companion-protocol.js`, and `libs/qr.js`. The QR encoder is bundled locally with license notices in `libs/QR-LICENSE.txt`. There is no build step, npm installation, API or database server.
+The application is a small static website: `sonelire-practice.html`, `companion.html`, the plain scripts `vocabulary.js`, `companion-protocol.js`, `check.js` and `results.js`, and `libs/qr.js`. The QR encoder is bundled locally with license notices in `libs/QR-LICENSE.txt`. There is no build step, npm installation, API or database server.
 
 To run locally from the repository directory:
 
@@ -74,7 +74,7 @@ Open <http://localhost:8000/sonelire-practice.html>. For use on another device, 
 To publish updates using the existing GitHub Pages deployment:
 
 ```bash
-git add sonelire-practice.html companion.html companion-protocol.js libs/ README.md HOW_TO_USE.md tests/
+git add sonelire-practice.html companion.html vocabulary.js companion-protocol.js check.js results.js libs/ README.md HOW_TO_USE.md tests/
 git commit -m "Update Sonelire Practice"
 git push
 ```
@@ -87,9 +87,13 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | --- | --- |
 | [`sonelire-practice.html`](sonelire-practice.html) | Main application |
 | [`companion.html`](companion.html) | Phone scoring interface |
-| [`companion-protocol.js`](companion-protocol.js) | Versioned form and results validation, QR rendering |
+| [`vocabulary.js`](vocabulary.js) | Shared Cases and Marks (labels, keys, wire and stored values) |
+| [`companion-protocol.js`](companion-protocol.js) | Versioned Form and Results code encoding, companion links, QR rendering |
+| [`check.js`](check.js) | Check lifecycle: Form preparation, Presentation, Marking, Import, save |
+| [`results.js`](results.js) | Records a saved Check into each Learner's Results |
+| [`CONTEXT.md`](CONTEXT.md), [`docs/adr/`](docs/adr/) | Domain glossary and architecture decisions |
 | `libs/` | Bundled QR encoder and license notices |
-| `tests/` | Protocol tests and browser smoke test |
+| `tests/` | Module tests and browser smoke test |
 | [`README.md`](README.md) | Project overview, features and deployment |
 | [`HOW_TO_USE.md`](HOW_TO_USE.md) | Parent-friendly usage guide |
 
@@ -107,4 +111,4 @@ The QR return uses the device’s native Camera app to open a link, not an in-pa
 
 ## Testing
 
-Run `node --test tests/protocol.test.js` from the repository root (Node 18+). The optional `python tests/browser_smoke.py` uses Python Playwright, Chromium (`CHROMIUM` can specify its executable path), and optionally Pillow and pyzbar for independent QR image decoding. It uses in-memory HTML and mocked storage, not a deployed server. Real-device Camera, browser storage and deployed Pages testing remain necessary.
+Run `node --test tests/` from the repository root (Node 18+). The optional `python tests/browser_smoke.py` uses Python Playwright, Chromium (`CHROMIUM` can specify its executable path), and optionally Pillow and pyzbar for independent QR image decoding. It uses in-memory HTML and mocked storage, not a deployed server. Real-device Camera, browser storage and deployed Pages testing remain necessary.
