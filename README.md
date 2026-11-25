@@ -77,7 +77,7 @@ To publish updates using the existing GitHub Pages deployment:
 2. Commit and push. The pre-push hook (see [Testing](#testing)) runs the suite first.
 
 ```bash
-git add sonelire-practice.html companion.html vocabulary.js companion-protocol.js check.js results.js check-log.js storage.js companion-record.js libs/ README.md HOW_TO_USE.md tests/
+git add sonelire-practice.html companion.html manifest.webmanifest icons/ vocabulary.js companion-protocol.js check.js results.js check-log.js storage.js companion-record.js libs/ README.md HOW_TO_USE.md tests/
 git commit -m "Update Sonelire Practice"
 git push
 ```
@@ -97,6 +97,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, and its saved form |
 | [`storage.js`](storage.js) | Loads and saves the Learner, Results and Unfinished check, and the Check log under its own key, through storage adapters (browser or in-memory) |
 | [`companion-record.js`](companion-record.js) | The phone's Companion record: Marks, position, undo, restoring its saved copy and producing the Results code |
+| [`manifest.webmanifest`](manifest.webmanifest), `icons/` | Home Screen install: web app manifest and icons. `scripts/make-icons.py` redraws the icons (needs Pillow) |
 | [`CONTEXT.md`](CONTEXT.md), [`docs/adr/`](docs/adr/) | Domain glossary and architecture decisions |
 | `libs/` | Bundled QR encoder and license notices |
 | `tests/` | Module tests; `tests/browser/` holds the browser scenarios |
