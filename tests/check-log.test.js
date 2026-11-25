@@ -1,0 +1,51 @@
+// Run from repository root: node --test tests/
+const test=require('node:test'),assert=require('node:assert/strict');require('../check-log.js');const L=globalThis.SonelireCheckLog;
+
+const completed=(formId,marks,{learner='1',skill='name',c='upper'}={})=>({learner,skill,case:c,formId,shownCount:marks.length,marks});
+
+test('recording a saved Check adds it to the Check list with its own counts',()=>{
+  const log=L.record(L.empty(),completed('F-1',[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'},{letter:'C',mark:'unsure'},{letter:'D',mark:'skip'}]),'2026-11-24T10:00:00.000Z');
+  assert.deepEqual(L.checks(log,'1','name','upper'),[
+    {date:'2026-11-24T10:00:00.000Z',formId:'F-1',case:'upper',shownCount:4,correct:1,needsPractice:2,skip:1}]);
+});
+
+test('recording a Form ID again replaces its Check record, so a retried save is counted once',()=>{
+  let log=L.record(L.empty(),completed('F-1',[{letter:'A',mark:'incorrect'}]),'2026-11-24T10:00:00.000Z');
+  log=L.record(log,completed('F-1',[{letter:'A',mark:'correct'}]),'2026-11-24T10:05:00.000Z');
+  assert.deepEqual(L.checks(log,'1','name','upper').map(c=>[c.date,c.correct]),[['2026-11-24T10:05:00.000Z',1]]);
+});
+
+test("the Check list holds only the Learner and Skill's Checks that include the Case's letters, newest first",()=>{
+  const saves=[
+    ['UP-1','2026-11-01T09:00:00.000Z',completed('UP-1',[{letter:'A',mark:'correct'}])],
+    ['MIX','2026-11-03T09:00:00.000Z',completed('MIX',[{letter:'A',mark:'correct'},{letter:'a',mark:'incorrect'}],{c:'mixed'})],
+    ['UP-2','2026-11-02T09:00:00.000Z',completed('UP-2',[{letter:'B',mark:'correct'}])],
+    ['LOW','2026-11-04T09:00:00.000Z',completed('LOW',[{letter:'b',mark:'correct'}],{c:'lower'})],
+    ['CHILD-2','2026-11-05T09:00:00.000Z',completed('CHILD-2',[{letter:'A',mark:'correct'}],{learner:'2'})],
+    ['SOUND','2026-11-06T09:00:00.000Z',completed('SOUND',[{letter:'A',mark:'correct'}],{skill:'sound'})]];
+  const log=saves.reduce((log,[,date,c])=>L.record(log,c,date),L.empty());
+  const ids=(...a)=>L.checks(log,...a).map(c=>c.formId);
+  assert.deepEqual(ids('1','name','upper'),['MIX','UP-2','UP-1']);
+  assert.deepEqual(ids('1','name','lower'),['LOW','MIX']);
+  assert.deepEqual(ids('1','name','mixed'),['LOW','MIX','UP-2','UP-1']);
+  assert.deepEqual(ids('2','name','upper'),['CHILD-2']);
+  assert.deepEqual(ids('1','sound','upper'),['SOUND']);
+  assert.equal(L.checks(log,'1','name','upper')[0].case,'mixed','each entry keeps its own Case');
+});
+
+test('the stored form is versioned JSON in CONTEXT.md vocabulary, and restores to the same Check log',()=>{
+  const log=L.record(L.empty(),completed('F-1',[{letter:'A',mark:'incorrect'},{letter:'B',mark:'skip'}]),'2026-11-24T10:00:00.000Z');
+  const stored=JSON.parse(JSON.stringify(L.toStored(log)));
+  assert.deepEqual(stored,{version:1,lastBackup:null,checks:[{date:'2026-11-24T10:00:00.000Z',learner:'1',skill:'name',case:'upper',formId:'F-1',shownCount:2,
+    marks:[{letter:'A',mark:'incorrect'},{letter:'B',mark:'skip'}]}]});
+  assert.deepEqual(L.checks(L.restore(stored),'1','name','upper'),L.checks(log,'1','name','upper'));
+});
+
+test('nothing saved, an unknown version or an unreadable Check record restores as an empty Check log',()=>{
+  const good={date:'2026-11-24T10:00:00.000Z',learner:'1',skill:'name',case:'upper',formId:'F-1',shownCount:1,marks:[{letter:'A',mark:'correct'}]};
+  const bad=[null,{},{version:2,checks:[good]},{version:1,checks:'x'},
+    ...[{learner:'3'},{skill:'spelling'},{case:'italic'},{formId:''},{date:7},{shownCount:2},{marks:[{letter:'A',mark:'miss'}]},{marks:[{letter:'é',mark:'correct'}]}]
+      .map(change=>({version:1,checks:[{...good,...change}]}))];
+  for(const stored of bad)assert.deepEqual(L.checks(L.restore(stored),'1','name','upper'),[],JSON.stringify(stored));
+  assert.equal(L.checks(L.restore({version:1,checks:[good]}),'1','name','upper').length,1);
+});

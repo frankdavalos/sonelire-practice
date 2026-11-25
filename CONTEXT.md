@@ -54,6 +54,14 @@ _Avoid_: Draft, session, pending check
 The latest saved Mark for one Learner, Skill and letter, with its date and Form ID.
 _Avoid_: Score, record, history
 
+**Check record**:
+The permanent, dated record of one saved Check: its Learner, Skill, Case, Form ID, Shown count and the Mark for each shown letter, Skips included. Never changed after saving.
+_Avoid_: Result, history entry, session log
+
+**Check log**:
+Every Check record saved on this device, kept beside the Results under its own storage key; the source for looking back over time.
+_Avoid_: History (as a synonym for Results), audit log
+
 **Needs practice**:
 A letter whose Result is Incorrect or Unsure.
 _Avoid_: Weak, failed, missed
@@ -94,6 +102,8 @@ _Avoid_: Sync, merge, upload
 - A **Check** has exactly one **Form**, one **Learner**, one **Skill** and one **Case**.
 - A **Check** produces one **Mark** per shown letter (the first **Shown count** letters of the **Form**).
 - Saving a **Check** turns each **Mark** into the **Learner's** **Result** for that letter, except that **Skip** never overwrites an existing **Result**.
+- Saving a **Check** also adds one **Check record** to the **Check log**; saving the same **Form** again replaces its **Check record**. A discarded **Unfinished check** is never recorded.
+- **Results** keep only the latest **Mark**; the **Check log** keeps every saved **Mark**, so it can show what a **Learner** struggled with before.
 - A **Practice deck** for "Needs practice" is derived from **Results**; practising never changes **Results**.
 - A **Companion record** belongs to exactly one **Form** and knows nothing about the **Learner**.
 - An **Import** succeeds only when the **Results code's** **Form** matches the **Unfinished check's** **Form** and has no **Marks** beyond the **Shown count**.

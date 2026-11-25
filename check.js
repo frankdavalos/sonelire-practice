@@ -20,8 +20,8 @@
   function clearMarks(c){inPhase(c,'marking');return make({...c,marks:{}});}
   const markedCount=c=>Object.keys(c.marks).length;
   const canComplete=c=>c.phase==='marking'&&markedCount(c)===c.shownCount;
-  /* Returns the saved Marks: {learner, skill, formId, marks:[{letter, mark}]} for shown letters. */
-  function complete(c){if(!canComplete(c))throw Error('Mark every shown letter before saving.');return {learner:c.learner,skill:c.form.skill,formId:c.form.id,marks:c.form.seq.slice(0,c.shownCount).map((letter,i)=>({letter,mark:c.marks[i]}))};}
+  /* Returns the saved Check: {learner, skill, case, formId, shownCount, marks:[{letter, mark}]} for shown letters. */
+  function complete(c){if(!canComplete(c))throw Error('Mark every shown letter before saving.');return {learner:c.learner,skill:c.form.skill,case:c.form.case,formId:c.form.id,shownCount:c.shownCount,marks:c.form.seq.slice(0,c.shownCount).map((letter,i)=>({letter,mark:c.marks[i]}))};}
   /* Validates a Results code against this Check. Returns {formId, marks, conflicts:[letter]}; throws parent-readable errors. */
   function previewImport(c,code){
     if(!c||c.phase!=='marking')throw Error('Finish the iPad presentation and open Enter results first.');

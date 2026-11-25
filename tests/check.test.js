@@ -50,11 +50,11 @@ test('markRemainingCorrect fills only unmarked shown letters; clearMarks empties
   assert.deepEqual(C.clearMarks(c).marks,{});
 });
 
-test('complete returns the saved Marks for shown letters only once all are marked',()=>{
+test('complete returns the Case, Shown count and saved Marks for shown letters only once all are marked',()=>{
   const c=C.mark(C.mark(marking(2),0,'correct'),1,'incorrect');
   assert.throws(()=>C.complete(C.mark(c,1,null)));
   assert.throws(()=>C.complete(C.begin('1',form)));
-  assert.deepEqual(C.complete(c),{learner:'1',skill:'name',formId:'F-1',marks:[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'}]});
+  assert.deepEqual(C.complete(c),{learner:'1',skill:'name',case:'upper',formId:'F-1',shownCount:2,marks:[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'}]});
 });
 
 const phoneCode=(marks,f=form)=>P.encodeResults(f,marks);
