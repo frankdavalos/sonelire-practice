@@ -111,4 +111,20 @@ The QR return uses the device’s native Camera app to open a link, not an in-pa
 
 ## Testing
 
-Run `node --test tests/` from the repository root (Node 18+). The optional `python tests/browser_smoke.py` uses Python Playwright, Chromium (`CHROMIUM` can specify its executable path), and optionally Pillow and pyzbar for independent QR image decoding. It uses in-memory HTML and mocked storage, not a deployed server. Real-device Camera, browser storage and deployed Pages testing remain necessary.
+`scripts/test.sh` runs the whole suite from any directory: the node unit tests (`node --test tests/`, Node 18+), then every `tests/browser_*.py` browser test. It exits non-zero if any of them fail, and fails with an install hint if Python Playwright is missing rather than skipping the browser tests.
+
+One-time setup per clone:
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
+git config core.hooksPath .githooks
+```
+
+`requirements-dev.txt` pins Playwright, plus Pillow and pyzbar for independent QR image decoding (optional; pyzbar needs the system zbar library, `libzbar0` on Debian/Ubuntu or `zbar` elsewhere). The browser tests drive a system Chromium, so `playwright install` is not needed.
+
+Run the suite with `scripts/test.sh`. It uses `.venv/bin/python` when present; set `PYTHON` to use another interpreter and `CHROMIUM` for the browser executable (default `/usr/bin/chromium`).
+
+The `.githooks/pre-push` hook runs `scripts/test.sh` and blocks the push if it fails. Pushing to `main` deploys GitHub Pages, so this hook is the deploy gate. It tests the working tree, so commit or set aside unrelated edits before pushing. `git push --no-verify` skips it; use that only as a deliberate exception.
+
+The browser tests use in-memory HTML and mocked storage, not a deployed server. Real-device Camera, browser storage and deployed Pages testing remain necessary.

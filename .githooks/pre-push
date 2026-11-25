@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Deploy gate: pushing to main publishes GitHub Pages, so run the full suite first.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Deliberate bypass:      git push --no-verify
+# Note: this tests the working tree, not only the commits being pushed.
+root="$(git rev-parse --show-toplevel)" || exit 1
+if ! "$root/scripts/test.sh"; then
+  echo "pre-push: tests failed; push blocked (git push --no-verify to override deliberately)." >&2
+  exit 1
+fi

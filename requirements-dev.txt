@@ -1,0 +1,10 @@
+# Dev dependencies for scripts/test.sh. Install into a virtualenv:
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+# The browser smoke test uses a system Chromium (CHROMIUM, default /usr/bin/chromium),
+# so `playwright install` is not needed.
+playwright==1.65.2
+
+# Optional: decode the QR images in the smoke test. pyzbar needs the system
+# zbar library (libzbar0 on Debian/Ubuntu, zbar on Arch/Fedora/Homebrew).
+pillow==13.0.0
+pyzbar==0.1.9
