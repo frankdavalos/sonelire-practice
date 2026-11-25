@@ -122,7 +122,7 @@ If you cannot finish entering results, choose **Finish later** and keep the pape
 
 ## 5. Understand the results
 
-Open **Results** and select the case and skill you want to review. The letter grid shows the latest recorded status for each selected letter.
+Open **Results** and select the case and skill you want to review. The letter grid shows the latest recorded status for each selected letter and the date it was last checked. Letters that were never checked show no date.
 
 | Status | Meaning |
 | --- | --- |
