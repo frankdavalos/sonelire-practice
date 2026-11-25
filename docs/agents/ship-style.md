@@ -1,16 +1,8 @@
-# Ship style: direct push
+# Ship style: PR-style
 
-Changes go straight to the default branch — no pull request workflow.
+Temporarily PR-style for the `/tdd-parallel 8` fanout. Restore direct push before merging.
 
 ## Conventions
 
-- Pull latest before committing.
-- Commit and push to the default branch.
-- Close the related issue explicitly with a reference to the commit (`gh issue close <num> --comment "<sha>"` for GitHub; equivalent for other trackers). If the issue is a sub-issue, closing it lets the parent auto-close once its last child closes.
-- Confirm the commit message with the user before pushing.
-
-## When a skill says "ship the change"
-
-1. Pull latest.
-2. Commit and push.
-3. Close the related issue with a reference to the commit.
+- Work on a feature branch, push it, and open one pull request against `main`.
+- Issues close through `Closes #N` lines in the PR body when it merges.
