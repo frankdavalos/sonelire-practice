@@ -92,7 +92,11 @@ _Avoid_: Revisit, regressed, forgot
 
 **Still learning**:
 A letter that Needs practice and did not just Slip back, whether it struggled before or was first checked in the latest Check.
-_Avoid_: Struggling, weak, still needs practice (Struggled before's wider list)
+_Avoid_: Struggling, weak, still needs practice
+
+**At a glance**:
+The Results tab's summary for one Learner, Skill and Case: letters Correct, the Latest change and its Recent wins, Slipped back and Still learning letters.
+_Avoid_: Dashboard, report card, overview
 
 **Not checked yet**:
 A letter with no Result, or whose only Result is Skip (so no Standing); neither a strength nor a weakness.

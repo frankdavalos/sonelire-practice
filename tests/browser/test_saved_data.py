@@ -63,7 +63,12 @@ def test_saved_data_with_no_check_log_key_shows_no_history_in_the_report(page):
     assert page.evaluate('localStorage.getItem("sonelire-check-log-v1")') is None
     page.click('#tabResults')
     assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (1, 1), 'the saved Results still load'
+    assert not page.locator('#glanceEmpty').is_visible(), 'Results are the stored truth (docs/adr/0002), so this is not "no checks yet"'
+    assert text(page, '#glanceRing').split() == ['1', 'of', '26'], 'the headline counts the same Results as the grid'
+    assert text(page, '#glanceCounts') == '1 needs practice · 24 not checked yet'
+    assert text(page, '#glanceChange') == 'No saved checks to compare yet'
+    assert not page.locator('#glanceLines').is_visible() and page.locator('#matrix .badge').count() == 0
     assert check_list(page) == [] and page.locator('#checkListEmpty').is_visible()
     assert not page.locator('#progressChart').is_visible()
     assert not page.locator('#struggles').is_visible() and page.locator('#strugglesEmpty').is_visible()
-    assert page.locator('#stillNeedsPractice button, #improved li').count() == 0
+    assert page.locator('#improved li').count() == 0

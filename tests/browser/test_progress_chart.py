@@ -1,9 +1,10 @@
 """Progress chart: letters Correct after each Check, drawn above the Check list from the second Check."""
 import re
-from steps import check_list, save_check, stat, text
+from steps import check_list, save_check, show_full_history, stat, text
 
 
 def chart(page):
+    show_full_history(page)
     return page.locator('#progressChart')
 
 

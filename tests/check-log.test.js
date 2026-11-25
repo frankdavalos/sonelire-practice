@@ -215,3 +215,67 @@ test('a backup covers every Check record saved before it, however old; only an o
   log=L.record(log,completed('F-3',[{letter:'C',mark:'correct'}]),'2026-03-01T10:00:00.000Z');
   assert.equal(L.needsBackup(log,now),true,'a Check record saved after the backup is more than 30 days old');
 });
+
+const groups=g=>({recentWin:g.recentWin,slippedBack:g.slippedBack,stillLearning:g.stillLearning,notCheckedYet:g.notCheckedYet});
+
+test('glance: each letter is in one group, by its Standing before and after the latest Check',()=>{
+  const log=logOf(
+    ['F-1',day(1),[{letter:'A',mark:'incorrect'},{letter:'B',mark:'correct'},{letter:'C',mark:'correct'},{letter:'D',mark:'unsure'}]],
+    ['F-2',day(2),[{letter:'A',mark:'correct'},{letter:'B',mark:'unsure'},{letter:'C',mark:'correct'},{letter:'D',mark:'incorrect'},{letter:'E',mark:'incorrect'},{letter:'F',mark:'correct'}]]);
+  const notChecked='GHIJKLMNOPQRSTUVWXYZ'.split('');
+  assert.deepEqual(groups(L.glance(log,'1','name','upper')),{
+    recentWin:['A'],slippedBack:['B'],stillLearning:['D','E'],notCheckedYet:notChecked});
+});
+
+test('glance: the headline gives letters Correct of the Case, the latest and previous Check dates, and the change since the previous Check',()=>{
+  const log=logOf(
+    ['F-1',day(1),[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'}]],
+    ['F-2',day(2),[{letter:'B',mark:'correct'},{letter:'C',mark:'correct'}]],
+    ['F-3',day(3),[{letter:'A',mark:'unsure'},{letter:'D',mark:'correct'}]]);
+  const g=L.glance(log,'1','name','upper');
+  assert.deepEqual([g.correct,g.total,g.latest,g.previous,g.change],[3,26,day(3),day(2),0]);
+  assert.equal(g.correct,L.progress(log,'1','name','upper').at(-1).correct,'the last progress point');
+  const g2=L.glance(logOf(['F-1',day(1),[{letter:'A',mark:'incorrect'}]],['F-2',day(4),[{letter:'A',mark:'correct'},{letter:'B',mark:'correct'}]]),'1','name','mixed');
+  assert.deepEqual([g2.correct,g2.total,g2.previous,g2.change],[2,52,day(1),2]);
+});
+
+test('glance: with one Check nothing is before it, so no Recent wins or Slipped back, every struggle is Still learning, and there is no change',()=>{
+  const g=L.glance(logOf(['F-1',day(1),[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'},{letter:'C',mark:'unsure'}]]),'1','name','upper');
+  assert.deepEqual([g.recentWin,g.slippedBack,g.stillLearning,g.correct,g.latest,g.previous,g.change],[[],[],['B','C'],1,day(1),null,null]);
+});
+
+test('glance: with no Checks every letter is Not checked yet',()=>{
+  const g=L.glance(L.empty(),'1','name','lower');
+  assert.deepEqual([g.correct,g.total,g.latest,g.previous,g.change,g.recentWin,g.slippedBack,g.stillLearning],[0,26,null,null,null,[],[],[]]);
+  assert.deepEqual(g.notCheckedYet,'abcdefghijklmnopqrstuvwxyz'.split(''));
+});
+
+test('glance: a Skip never changes Standing, even in the latest Check, and only Skips is Not checked yet',()=>{
+  const log=logOf(
+    ['F-1',day(1),[{letter:'A',mark:'incorrect'},{letter:'B',mark:'correct'},{letter:'C',mark:'skip'}]],
+    ['F-2',day(2),[{letter:'A',mark:'skip'},{letter:'B',mark:'skip'},{letter:'C',mark:'skip'},{letter:'D',mark:'correct'}]]);
+  const g=L.glance(log,'1','name','upper');
+  assert.deepEqual([g.recentWin,g.slippedBack,g.stillLearning],[[],[],['A']]);
+  assert.ok(g.notCheckedYet.includes('C')&&!g.notCheckedYet.includes('B'));
+  assert.deepEqual([g.correct,g.change],[2,1]);
+});
+
+test("glance: the latest Check is the newest that includes the Case's letters; a mixed Check counts for both Cases; Learners and Skills stay apart",()=>{
+  const log=logOf(
+    ['UP',day(1),[{letter:'A',mark:'incorrect'},{letter:'B',mark:'correct'}]],
+    ['MIX',day(2),[{letter:'A',mark:'correct'},{letter:'a',mark:'incorrect'}],{c:'mixed'}],
+    ['LOW',day(3),[{letter:'a',mark:'correct'},{letter:'b',mark:'unsure'}],{c:'lower'}],
+    ['CHILD-2',day(4),[{letter:'B',mark:'incorrect'}],{learner:'2'}],
+    ['SOUND',day(5),[{letter:'B',mark:'incorrect'}],{skill:'sound'}]);
+  const g=(...a)=>{const r=L.glance(log,...a);return [r.latest,r.previous,r.recentWin,r.slippedBack,r.stillLearning]};
+  assert.deepEqual(g('1','name','upper'),[day(2),day(1),['A'],[],[]],'the lowercase-only Check is not the latest for uppercase');
+  assert.deepEqual(g('1','name','lower'),[day(3),day(2),['a'],[],['b']]);
+  assert.deepEqual(g('1','name','mixed'),[day(3),day(2),['a'],[],['b']]);
+  assert.deepEqual(g('2','name','upper'),[day(4),null,[],[],['B']]);
+  assert.deepEqual(g('1','sound','upper'),[day(5),null,[],[],['B']]);
+});
+
+test('glance: Unsure before and Correct now is a Recent win too',()=>{
+  const log=logOf(['F-1',day(1),[{letter:'A',mark:'unsure'}]],['F-2',day(2),[{letter:'A',mark:'correct'}]]);
+  assert.deepEqual(L.glance(log,'1','name','upper').recentWin,['A']);
+});

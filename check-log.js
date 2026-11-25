@@ -31,7 +31,7 @@
     return forLearner(log,learner,skill).sort(newestFirst).flatMap(r=>r.marks.filter(m=>m.letter===letter).map(m=>({date:r.date,formId:r.formId,mark:m.mark})));
   }
   const struggle=m=>m==='incorrect'||m==='unsure';
-  /* Letters of the Case that were ever Incorrect or Unsure, by standing (latest non-Skip Mark):
+  /* Letters of the Case that were ever Incorrect or Unsure, by Standing (latest non-Skip Mark):
      {stillNeedsPractice:[letter], improved:[{letter, firstStruggle, lastStruggle, correctSince}]}, in Case order. */
   function struggles(log,learner,skill,c){
     const records=oldestFirst(log,learner,skill),result={stillNeedsPractice:[],improved:[]};
@@ -49,14 +49,33 @@
     }
     return result;
   }
+  /* Standing: each letter's latest non-Skip Mark. Returns the Map, updated with one Check record's Marks. */
+  const applyMarks=(standing,r)=>{for(const {letter,mark} of r.marks)if(mark!=='skip')standing.set(letter,mark);return standing};
+  const countCorrect=(letters,standing)=>letters.filter(l=>standing.get(l)==='correct').length;
+  const caseRecords=(log,learner,skill,c)=>oldestFirst(log,learner,skill).filter(includesCase(c));
   /* One point per Check that includes any of the Case's letters, oldest first: {date, formId, correct, total}, where
      correct counts the Case's letters whose latest non-Skip Mark as of that Check is Correct. */
   function progress(log,learner,skill,c){
     const letters=V.lettersFor(c),standing=new Map();
-    return oldestFirst(log,learner,skill).filter(includesCase(c)).map(r=>{
-      for(const {letter,mark} of r.marks)if(mark!=='skip')standing.set(letter,mark);
-      return {date:r.date,formId:r.formId,correct:letters.filter(l=>standing.get(l)==='correct').length,total:letters.length};
-    });
+    return caseRecords(log,learner,skill,c).map(r=>({date:r.date,formId:r.formId,correct:countCorrect(letters,applyMarks(standing,r)),total:letters.length}));
+  }
+  /* The Latest change (CONTEXT.md) for At a glance, comparing Standing just before and after the latest Check that includes
+     any of the Case's letters: {correct, total, latest, previous, change, recentWin, slippedBack, stillLearning, notCheckedYet}.
+     latest/previous are Check dates (null without one); change is null with fewer than two Checks; the four lists are in
+     Case order, and a letter Correct both before and after is in none of them. */
+  function glance(log,learner,skill,c){
+    const letters=V.lettersFor(c),records=caseRecords(log,learner,skill,c),latest=records.at(-1);
+    const before=records.slice(0,-1).reduce(applyMarks,new Map()),now=latest?applyMarks(new Map(before),latest):before;
+    const correct=countCorrect(letters,now);
+    const result={correct,total:letters.length,latest:latest?.date??null,previous:records.at(-2)?.date??null,
+      change:records.length>1?correct-countCorrect(letters,before):null,recentWin:[],slippedBack:[],stillLearning:[],notCheckedYet:[]};
+    for(const letter of letters){
+      const was=before.get(letter),is=now.get(letter);
+      if(!is)result.notCheckedYet.push(letter);
+      else if(struggle(is))result[was==='correct'?'slippedBack':'stillLearning'].push(letter);
+      else if(struggle(was))result.recentWin.push(letter);
+    }
+    return result;
   }
   /* Returns a new Check log without the Case's letters' Marks in this Learner and Skill's Check records; records left with no Marks are deleted. */
   function clear(log,learner,skill,c){
@@ -83,5 +102,5 @@
     if(stored?.version!==1||!Array.isArray(stored.checks)||!stored.checks.every(readable))return empty();
     return make(stored.checks,isText(stored.lastBackup)?stored.lastBackup:null);
   }
-  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,clear,needsBackup,toStored,restore});
+  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,glance,clear,needsBackup,toStored,restore});
 })(globalThis);

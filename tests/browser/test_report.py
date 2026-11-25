@@ -1,9 +1,10 @@
-"""Report: what a Learner struggled with before, and each letter's history, from the Check log."""
-from steps import save_check
+"""Report: which letters Improved after a struggle, and each letter's history, from the Check log."""
+from steps import save_check, show_full_history
 
 
-def letters(page, selector):
-    return page.locator(f'{selector} button').all_inner_texts()
+def improved(page):
+    show_full_history(page)
+    return page.locator('#improved li button').all_inner_texts()
 
 
 def struggled_twice(page):
@@ -12,11 +13,12 @@ def struggled_twice(page):
     save_check(page, 'ci')
 
 
-def test_struggled_before_lists_letters_still_needing_practice_and_letters_that_improved(page):
+def test_struggled_before_lists_letters_that_improved_with_their_dates(page):
     struggled_twice(page)
-    assert letters(page, '#stillNeedsPractice') == ['B']
-    [improved] = page.locator('#improved li').all_inner_texts()
-    assert improved.startswith('A') and 'correct since' in improved
+    show_full_history(page)
+    [line] = page.locator('#improved li').all_inner_texts()
+    assert line.startswith('A') and 'correct since' in line
+    assert page.locator('#stillNeedsPractice').count() == 0, 'At a glance already names letters that need practice'
 
 
 def history(page):
@@ -34,38 +36,41 @@ def test_tapping_a_letter_in_the_today_grid_opens_its_history_newest_first(page)
     assert page.evaluate('document.activeElement.dataset.letter') == 'A', 'focus returns to the letter'
 
 
-def test_letters_in_the_struggled_before_lists_open_their_history_too(page):
+def test_letters_in_the_improved_list_open_their_history_too(page):
     struggled_twice(page)
-    page.click('#stillNeedsPractice [data-letter=B]')
-    assert [row.rsplit(' · ', 1)[1] for row in history(page)] == ['Incorrect', 'Incorrect']
-    page.keyboard.press('Escape')
+    show_full_history(page)
     page.click('#improved [data-letter=A]')
     assert page.locator('#historyTitle').inner_text().startswith('A')
+    assert [row.rsplit(' · ', 1)[1] for row in history(page)] == ['Correct', 'Incorrect']
 
 
-def test_struggled_before_says_so_when_nothing_was_missed_and_follows_the_learner(page):
+def test_struggled_before_says_so_until_a_letter_improves_and_follows_the_learner(page):
     save_check(page, 'cc')
-    assert page.locator('#strugglesEmpty').is_visible()
-    assert not page.locator('#struggles').is_visible()
+    show_full_history(page)
+    assert page.locator('#strugglesEmpty').is_visible() and not page.locator('#struggles').is_visible()
     save_check(page, 'i')
-    assert letters(page, '#stillNeedsPractice') == ['A']
+    assert improved(page) == [] and page.locator('#strugglesEmpty').is_visible(), 'slipping back is not improving'
+    save_check(page, 'c')
+    assert improved(page) == ['A']
     page.select_option('#learner', '2')
-    assert page.locator('#strugglesEmpty').is_visible(), "Child 1's struggles never show for Child 2"
+    assert page.locator('#strugglesEmpty').is_visible(), "Child 1's letters never show for Child 2"
 
 
 def test_struggled_before_follows_the_case_and_skill_selection(page):
     save_check(page, 'ii')
+    save_check(page, 'c')
     save_check(page, 'i', case='lower', skill='sound')
+    save_check(page, 'c', case='lower', skill='sound')
     page.click('#resultCase [data-value=upper]')
     page.click('#resultSkill [data-value=name]')
-    assert letters(page, '#stillNeedsPractice') == ['A', 'B']
+    assert improved(page) == ['A']
     page.click('#resultCase [data-value=lower]')
-    assert page.locator('#strugglesEmpty').is_visible() and not page.locator('#struggles').is_visible()
+    assert improved(page) == [] and page.locator('#strugglesEmpty').is_visible()
     page.click('#resultSkill [data-value=sound]')
-    assert letters(page, '#stillNeedsPractice') == ['a']
+    assert improved(page) == ['a']
     page.click('#resultCase [data-value=upper]')
-    assert page.locator('#strugglesEmpty').is_visible() and not page.locator('#struggles').is_visible()
+    assert improved(page) == []
     page.click('#resultCase [data-value=mixed]')
-    assert letters(page, '#stillNeedsPractice') == ['a'], "a mixed selection spans both Cases of this Skill"
+    assert improved(page) == ['a'], 'a mixed selection spans both Cases of this Skill'
     page.click('#resultSkill [data-value=name]')
-    assert letters(page, '#stillNeedsPractice') == ['A', 'B']
+    assert improved(page) == ['A']

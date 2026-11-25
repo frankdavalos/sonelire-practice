@@ -24,7 +24,7 @@ You can use the digital companion instead of paper. The child sees the letter on
    - **File:** Choose **Save code file** on the phone, transfer the small text file privately, then select **Choose code file** in the iPad import panel.
    - **Share:** If the phone can share files, choose **Share results** and AirDrop the text file to the iPad, then select **Choose code file** in the iPad import panel. Use this when the check runs in the Home Screen app, which QR links can't reach (see [Install on the iPad Home Screen](#install-on-the-ipad-home-screen-recommended)).
 9. Select **Review and import marks**. Sonelire checks the form, order and response count, rejecting wrong-form codes or marks for letters not shown. If replacing conflicting entries, confirm only if intended. Review the populated marks, then select **Save results**.
-10. Use **Practice letters needing work** as before. Once the results are saved on the iPad, clear the companion record on your phone using **Clear this companion session**.
+10. Use the **Practice** button on **Results** as before. Once the results are saved on the iPad, clear the companion record on your phone using **Clear this companion session**.
 
 **Important:** The two devices do not advance each other. Results codes and QR links are not encrypted. Treat them as private. Avoid sharing them in public messages. The phone companion does not identify the learner; the iPad attaches the validated marks to its own existing session.
 
@@ -148,28 +148,38 @@ If you cannot finish entering results, choose **Finish later** and keep the pape
 
 ## 5. Understand the results
 
-Open **Results** and select the case and skill you want to review. The letter grid shows the latest recorded status for each selected letter and the date it was last checked. Letters that were never checked show no date.
+Open **Results** and select the case and skill you want to review. **At a glance** sums up the selected child's letters:
+
+- A ring shows how many letters are correct, out of all the letters in the selected case. Next to it, one line compares that with the previous check ("2 more letters correct · compared with …", "Same as …" or "1 fewer letter correct than …"). After the first check it says **First check** instead. Below that, it counts the letters that need practice and the letters not checked yet. Before any check for these letters it says **No checks yet for these letters.** and offers **Check these letters**.
+- Short lines name the letters that changed in the latest check, compared with just before it:
+  - **Recent wins:** correct now, after being incorrect or unsure.
+  - **Slipped back:** incorrect or unsure now, after being correct.
+  - **Still learning:** every other letter that needs practice, including one checked for the first time.
+
+  A line with no letters is left out. Skipped letters never change a letter's line.
+- The **Practice** button names the letters that need practice, for example "Practice B, D, H →", or gives their number when there are more than five.
+
+The letter grid shows the latest recorded status for each selected letter and the date it was last checked. Letters that were never checked, or only skipped, say Not checked yet and show no date. An ↑ marks a recent win and a ↓ marks a letter that slipped back.
 
 | Status | Meaning |
 | --- | --- |
 | Correct (green) | Independently correct at the latest scored observation. |
 | Incorrect or Unsure (warm orange) | Include in targeted practice. |
-| Skipped or Not checked (neutral) | Insufficient assessment evidence; not automatically a weakness or a demonstrated skill. |
+| Not checked yet (neutral) | Never checked, or only skipped: insufficient assessment evidence, not automatically a weakness or a demonstrated skill. |
 
-The totals show **Correct**, **Needs practice**, and **Not assessed**. In mixed mode, each uppercase and lowercase form counts as a separate item.
+In mixed mode, each uppercase and lowercase form counts as a separate item.
 
-For example, if the child identifies 20 of the 26 lowercase letters, gives incorrect responses for four, and is unsure of two, the totals will show 20 correct and 6 needing practice (assuming all letters were assessed and saved).
+For example, if the child identifies 20 of the 26 lowercase letters, gives incorrect responses for four, and is unsure of two, the ring shows 20 of 26 and the line below says 6 need practice (assuming all letters were assessed and saved).
 
 A later completed check updates the recorded results for assessed letters. Skipping a letter or ending before reaching it preserves any previous result for that letter. The grid can therefore combine results from different checks; it is not necessarily a report of one complete assessment.
 
 Tap any letter in the grid to see its history: the date, form ID and mark from every saved check that included it.
 
-**Struggled before** looks back over every saved check for the selected case and skill:
+Select **View full letter results and history** to see the rest of the report and **Clear these results**. It starts folded away when the app opens.
 
-- **Still needs practice** lists letters whose latest mark is Incorrect or Unsure.
-- **Improved** lists letters that were Incorrect or Unsure in an earlier check and Correct since, with when they struggled and when they became correct. A letter that slips back to Incorrect or Unsure moves back to Still needs practice.
+**Struggled before** looks back over every saved check for the selected case and skill. Its **Improved** list shows letters that were Incorrect or Unsure in an earlier check and Correct since, with when they struggled and when they became correct. A letter that slips back to Incorrect or Unsure leaves the list. The letters that still need practice are already named in **At a glance**.
 
-Skipped letters are ignored here, as in the grid. Tap a letter in either list to see its history.
+Skipped letters are ignored here, as in the grid. Tap a letter to see its history.
 
 **Progress** charts how many letters were correct after each check. The chart appears from the second saved check for the selected case and skill. Below it, the list of saved checks shows each check's date, case and counts of correct, needs practice and skipped letters.
 
@@ -177,7 +187,7 @@ These are informal observations, not validated mastery levels, grade-level bench
 
 ## 6. Practice letters that need work
 
-From **Results**, select **Practice letters needing work**. This opens a practice deck containing only letters marked incorrect or unsure in the selected case and skill, for the selected child.
+From **Results**, select the **Practice** button below the grid. This opens a practice deck containing only letters marked incorrect or unsure in the selected case and skill, for the selected child.
 
 You can also select **Needs practice** directly in the Practice tab. If no letters are available, switch to **All letters** or run a letter check. Unchecked and skipped letters are not automatically included in the targeted deck.
 
@@ -201,7 +211,7 @@ Results and an unfinished check are saved in the current browser's local storage
 
 Use the same device, browser, browser profile and website address to access existing results. On an iPad, the Home Screen app counts as its own browser: it does not share results with Safari (see [Install on the iPad Home Screen](#install-on-the-ipad-home-screen-recommended)). Another device will have its own records. There is no synchronization between devices; use **Export backup** on the Results tab to save a Backup file (for example to iCloud Drive or Files) and **Restore from backup** to bring it back. If a saved check has gone more than 30 days without a backup, the Results tab shows a reminder until you export one. Clearing website data may erase records permanently; private browsing can also make storage temporary, and Safari can delete a website's data after 7 days of use without opening it. Do not use it for official school records.
 
-To reset a set of saved results intentionally, open **Results**, choose the correct learner, case and skill, then select **Clear these results**. Read the confirmation carefully: the selected results are deleted permanently, and those letters are also removed from every saved check, so Struggled before and Progress start fresh too. The confirmation says how many saved checks are affected and their dates; use **Export backup** first if you might want them back. Mixed case includes both uppercase and lowercase for that skill.
+To reset a set of saved results intentionally, open **Results**, choose the correct learner, case and skill, open **View full letter results and history**, then select **Clear these results**. Read the confirmation carefully: the selected results are deleted permanently, and those letters are also removed from every saved check, so Struggled before and Progress start fresh too. The confirmation says how many saved checks are affected and their dates; use **Export backup** first if you might want them back. Mixed case includes both uppercase and lowercase for that skill.
 
 ## 8. Troubleshooting
 

@@ -72,7 +72,19 @@ def save_check(page, keys, **form):
     return form_id
 
 
+def show_full_history(page):
+    """Unfold "View full letter results and history" on the Results tab, as a parent taps it."""
+    if page.locator('#fullHistory').get_attribute('open') is None:
+        page.click('#fullHistory summary')
+
+
+def clear_these_results(page):
+    show_full_history(page)
+    page.click('#resetResults')
+
+
 def check_list(page):
+    show_full_history(page)
     return page.locator('#checkList li').all_inner_texts()
 
 
@@ -91,6 +103,10 @@ def swipe(page, selector, dx):
     page.mouse.up()
 
 
+GRID_STATUS = {'Correct': '.cell.correct', 'Needs practice': '.cell.incorrect, .cell.unsure',
+               'Not checked yet': '.cell.not-assessed'}
+
+
 def stat(page, label):
-    """The Results view's total for 'Correct', 'Needs practice' or 'Not assessed'."""
-    return int(page.locator('#stats .stat', has_text=label).locator('strong').inner_text())
+    """How many grid cells show 'Correct', 'Needs practice' or 'Not checked yet' (from Results)."""
+    return page.locator('#matrix').locator(GRID_STATUS[label]).count()

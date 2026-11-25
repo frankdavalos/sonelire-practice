@@ -27,7 +27,7 @@ Version 2 adds a complete **Assess → Review → Practice → Reassess** workfl
 | Targeted practice | Generate a deck of letters marked incorrect or unsure. |
 | Local persistence | Save results and resume one unfinished check in the same browser. |
 | Home Screen install | Add the site to the iPad Home Screen from Safari; it opens full screen and asks the iPad to keep its data. |
-| Check log | Struggled before (Still needs practice / Improved), each letter's history, and a Progress chart of letters correct after each check. |
+| Check log | At a glance (letters correct, the change since the previous check, Recent wins / Slipped back / Still learning, and ↑ / ↓ on the grid), Struggled before (Improved), each letter's history, and a Progress chart of letters correct after each check. |
 | Backup file | Export both learners' results and saved checks to a file, and restore from one after a preview. |
 | Andika typography | Literacy-oriented letterforms with large, high-contrast text. |
 
@@ -37,7 +37,7 @@ Version 2 adds a complete **Assess → Review → Practice → Reassess** workfl
 2. Choose **Practice** for ordinary flashcards, or **Assess** to conduct a letter check.
 3. For a check, select the skill, case and order, then choose **Prepare check**. Choose **Phone companion QR** and scan with your phone, or print the companion sheet / copy the displayed order onto paper.
 4. Choose **Begin check**, ask the child for each letter name or familiar sound, and record responses privately on the phone or paper. Tap to advance the iPad separately after scoring each item.
-5. After the check, import phone marks (QR link, code or text file; in the Home Screen app use **Share results** on the phone, since QR links open only in Safari) or enter paper marks, review and save, then open **Results** and select **Practice letters needing work**.
+5. After the check, import phone marks (QR link, code or text file; in the Home Screen app use **Share results** on the phone, since QR links open only in Safari) or enter paper marks, review and save, then open **Results** and select the **Practice** button.
 6. Reassess after practice to update the child's letter results.
 
 See the [step-by-step parent guide](HOW_TO_USE.md) for scoring, navigation, practice suggestions and troubleshooting.
@@ -110,7 +110,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 
 ## Release limitations
 
-Results keep the latest recorded mark per learner, letter and skill; the Check log on the same device keeps every saved check (until **Clear these results** removes those letters) for Struggled before, letter history and Progress. Only one unfinished check can be saved at a time. Skipping a letter in a later check does not erase an existing result for that letter. There is no automated speech recognition, audio playback, cross-device sync, CSV export, service worker or offline mode.
+Results keep the latest recorded mark per learner, letter and skill; the Check log on the same device keeps every saved check (until **Clear these results** removes those letters) for At a glance, Struggled before, letter history and Progress. Only one unfinished check can be saved at a time. Skipping a letter in a later check does not erase an existing result for that letter. There is no automated speech recognition, audio playback, cross-device sync, CSV export, service worker or offline mode.
 
 For a new issue or suggestion, use the repository's [Issues page](https://github.com/frankdavalos/sonelire-practice/issues).
 

@@ -51,7 +51,7 @@ def test_companion_round_trip(ipad, phone):
     assert c.locator('#scoreList [data-index="1"] [data-value=incorrect]').get_attribute('aria-pressed') == 'true'
     c.click('#saveScores')
     assert c.locator('#results').is_visible()
-    assert '1 letter to review' in text(c, '#resultHint')
+    assert '1 needs practice' in text(c, '#glanceCounts')
     c.click('#practiceWeak')
     assert text(c, '#counter') == '1 / 1'
 

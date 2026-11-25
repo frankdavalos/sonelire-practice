@@ -1,5 +1,5 @@
 """Results view: what is shown, and permanently clearing it."""
-from steps import accept_next_dialog, check_list, saved_data, seed, stat
+from steps import accept_next_dialog, check_list, clear_these_results, saved_data, seed, stat
 
 LOG_KEY = 'sonelire-check-log-v1'
 
@@ -36,7 +36,7 @@ def test_the_clear_confirmation_names_the_check_records_affected_and_dismissing_
     before = check_list(page)
     messages = []
     page.once('dialog', lambda d: (messages.append(d.message), d.dismiss()))
-    page.click('#resetResults')
+    clear_these_results(page)
     assert messages == ['Clear uppercase letter names results for Child 1?\n\n'
                         'This also removes these letters from 3 saved checks (1 Nov 2026 – 5 Nov 2026). '
                         'Export a backup first if you might want them back.\n\nThis cannot be undone.']
@@ -47,15 +47,15 @@ def test_the_clear_confirmation_names_the_check_records_affected_and_dismissing_
 
 
 def report_is_empty(page):
-    return (stat(page, 'Not assessed') == 26 and page.locator('#strugglesEmpty').is_visible()
-            and check_list(page) == [] and page.locator('#checkListEmpty').is_visible() and not page.locator('#progressChart').is_visible())
+    return (stat(page, 'Not checked yet') == 26 and check_list(page) == [] and page.locator('#strugglesEmpty').is_visible()
+            and page.locator('#checkListEmpty').is_visible() and not page.locator('#progressChart').is_visible())
 
 
 def test_confirming_clears_those_letters_from_today_struggled_before_and_progress_and_survives_a_reload(page):
     seeded_history(page)
     assert len(check_list(page)) == 3 and page.locator('#progressChart').is_visible()
     accept_next_dialog(page)
-    page.click('#resetResults')
+    clear_these_results(page)
     assert report_is_empty(page)
     page.reload()
     page.click('#tabResults')
@@ -63,7 +63,7 @@ def test_confirming_clears_those_letters_from_today_struggled_before_and_progres
     page.click('#resultCase [data-value=lower]')
     [mixed] = check_list(page)
     assert 'Form MIX' in mixed and '1 letter shown' in mixed, 'the mixed Check keeps its lowercase letter'
-    assert page.locator('#stillNeedsPractice button').all_inner_texts() == ['a']
+    assert page.locator('#glanceLines [data-letter]').all_inner_texts() == ['a'], 'a is still Still learning'
     page.click('#resultCase [data-value=upper]')
     page.click('#resultSkill [data-value=sound]')
     assert len(check_list(page)) == 1, 'sounds is a different Skill'
@@ -88,7 +88,7 @@ def test_a_clear_that_cannot_be_saved_changes_nothing_and_says_so(device):
     page.evaluate('window.logWritesFail = true')
     messages = []
     page.on('dialog', lambda d: (messages.append(d.message), d.accept()))
-    page.click('#resetResults')
+    clear_these_results(page)
     assert messages[1:] == ['These results could not be cleared on this device. Nothing was changed.']
     assert page.locator('#storageNotice').is_visible()
     assert check_list(page) == before and stat(page, 'Needs practice') == 1
@@ -105,16 +105,16 @@ def cell(page, letter):
 def test_clear_these_results_removes_only_that_learner_skill_and_case(page):
     seeded_results(page)
     assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (1, 1)
-    page.click('#resetResults')  # unanswered confirm is dismissed: nothing changes
+    clear_these_results(page)  # unanswered confirm is dismissed: nothing changes
     assert stat(page, 'Needs practice') == 1
     messages = accept_next_dialog(page)
-    page.click('#resetResults')
+    clear_these_results(page)
     assert messages == ['Clear uppercase letter names results for Child 1?\n\nNo saved checks hold these letters. '
                         'Export a backup first if you might want them back.\n\nThis cannot be undone.']
-    assert (stat(page, 'Correct'), stat(page, 'Needs practice'), stat(page, 'Not assessed')) == (0, 0, 26)
+    assert (stat(page, 'Correct'), stat(page, 'Needs practice'), stat(page, 'Not checked yet')) == (0, 0, 26)
     page.reload()
     page.click('#tabResults')
-    assert stat(page, 'Not assessed') == 26, 'the clear is saved'
+    assert stat(page, 'Not checked yet') == 26, 'the clear is saved'
     page.click('#resultCase [data-value=lower]')
     assert stat(page, 'Needs practice') == 1, 'lowercase is a different Case'
     page.click('#resultSkill [data-value=sound]')
@@ -130,8 +130,8 @@ def test_clearing_mixed_case_results_clears_both_cases(page):
     page.click('#resultCase [data-value=mixed]')
     assert stat(page, 'Needs practice') == 2
     accept_next_dialog(page)
-    page.click('#resetResults')
-    assert stat(page, 'Not assessed') == 52
+    clear_these_results(page)
+    assert stat(page, 'Not checked yet') == 52
     for case in ['upper', 'lower']:
         page.click(f'#resultCase [data-value={case}]')
         assert stat(page, 'Correct') + stat(page, 'Needs practice') == 0
@@ -144,5 +144,5 @@ def test_each_letter_shows_when_it_was_last_checked_and_unchecked_letters_show_n
     seed(page, saved)
     page.click('#tabResults')
     assert cell(page, 'A') == ['A', 'Correct', '12 Nov 2026']
-    assert cell(page, 'B') == ['B', 'Skipped', '1 Jan 2026']
-    assert cell(page, 'C') == ['C', 'Not checked']
+    assert cell(page, 'B') == ['B', 'Not checked yet'], 'only Skipped is Not checked yet, with no date'
+    assert cell(page, 'C') == ['C', 'Not checked yet']
