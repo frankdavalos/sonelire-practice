@@ -163,7 +163,7 @@ If a targeted deck is empty, celebrate the progress and periodically review fami
 
 Results and an unfinished check are saved in the current browser's local storage when available. You do not need to create an account or enter a child's real name.
 
-Use the same device, browser, browser profile and website address to access existing results. Another device will have its own records. This version does not offer backup, import, export or synchronization. Clearing website data may erase records permanently; private browsing can also make storage temporary. Do not use it for official school records.
+Use the same device, browser, browser profile and website address to access existing results. Another device will have its own records. There is no synchronization between devices; use **Export backup** on the Results tab to save a Backup file (for example to iCloud Drive or Files) and **Restore from backup** to bring it back. Clearing website data may erase records permanently; private browsing can also make storage temporary. Do not use it for official school records.
 
 To reset a set of saved results intentionally, open **Results**, choose the correct learner, case and skill, then select **Clear these results**. Read the confirmation carefully: the selected results will be deleted permanently. Mixed case includes both uppercase and lowercase for that skill.
 

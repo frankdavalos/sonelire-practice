@@ -45,7 +45,7 @@ Sonelire Practice stores its learner results and unfinished check in the browser
 
 - Data is separate between browsers, devices and browser storage contexts; it does not synchronize. The phone companion stores its unfinished form separately. Transfer is explicit.
 - Clearing site data, using private browsing or browser storage eviction can cause records to be lost.
-- The companion can export and import one assessment’s marks; there is no complete database export, backup or recovery feature.
+- The companion can export and import one assessment’s marks. The Results tab can export a Backup file of both Learners’ Results and the Check log, and restore from one after a preview; the Unfinished check is not included.
 - Andika is loaded from Google Fonts; this makes a third-party font request, but the application does not send assessment results to that service. Hosting providers may retain ordinary request logs.
 - Results are stored locally, not encrypted by the application, and are accessible to others using the same browser profile.
 
