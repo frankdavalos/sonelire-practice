@@ -98,7 +98,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`companion-record.js`](companion-record.js) | The phone's Companion record: Marks, position, undo, restoring its saved copy and producing the Results code |
 | [`CONTEXT.md`](CONTEXT.md), [`docs/adr/`](docs/adr/) | Domain glossary and architecture decisions |
 | `libs/` | Bundled QR encoder and license notices |
-| `tests/` | Module tests and browser smoke test |
+| `tests/` | Module tests; `tests/browser/` holds the browser scenarios |
 | [`README.md`](README.md) | Project overview, features and deployment |
 | [`HOW_TO_USE.md`](HOW_TO_USE.md) | Parent-friendly usage guide |
 
@@ -116,7 +116,7 @@ The QR return uses the device’s native Camera app to open a link, not an in-pa
 
 ## Testing
 
-`scripts/test.sh` runs the whole suite from any directory: the node unit tests (`node --test tests/`, Node 18+), then every `tests/browser_*.py` browser test. It exits non-zero if any of them fail, and fails with an install hint if Python Playwright is missing rather than skipping the browser tests.
+`scripts/test.sh` runs the whole suite from any directory: the node unit tests (`node --test tests/`, Node 18+), then the browser scenarios in `tests/browser/` under pytest. Each scenario is independent and opens fresh devices, so one failure doesn't hide the others; extra arguments go to pytest (`scripts/test.sh -k companion`). It exits non-zero if anything fails, and fails with an install hint if pytest or Python Playwright is missing rather than skipping the browser tests. `SONELIRE_COVERAGE=1 scripts/test.sh` also reports how much of each page's inline script the scenarios ran.
 
 One-time setup per clone:
 
@@ -126,7 +126,7 @@ python3 -m venv .venv
 git config core.hooksPath .githooks
 ```
 
-`requirements-dev.txt` pins Playwright, plus Pillow and pyzbar for independent QR image decoding (optional; pyzbar needs the system zbar library, `libzbar0` on Debian/Ubuntu or `zbar` elsewhere). The browser tests drive a system Chromium, so `playwright install` is not needed.
+`requirements-dev.txt` pins Playwright and pytest, plus Pillow and pyzbar for independent QR image decoding (optional; pyzbar needs the system zbar library, `libzbar0` on Debian/Ubuntu or `zbar` elsewhere). The browser tests drive a system Chromium, so `playwright install` is not needed.
 
 Run the suite with `scripts/test.sh`. It uses `.venv/bin/python` when present; set `PYTHON` to use another interpreter and `CHROMIUM` for the browser executable (default `/usr/bin/chromium`).
 

@@ -1,0 +1,76 @@
+"""The two-device Companion round trip, end to end: iPad presents, phone marks, QR link brings the Marks back."""
+import io
+from steps import accept_next_dialog, stat, text
+
+try:
+    from PIL import Image
+    from pyzbar.pyzbar import decode
+except ImportError:  # optional: pyzbar needs the system zbar library
+    decode = None
+
+
+def qr_text(locator):
+    return decode(Image.open(io.BytesIO(locator.screenshot())))[0].data.decode()
+
+
+def test_companion_round_trip(ipad, phone):
+    a = ipad.open()
+    a.click('#tabAssess')
+    a.click('#assessCase [data-value=mixed]')
+    a.click('#prepare')
+    a.click('#showCompanion')
+    url = a.locator('#companionLink').get_attribute('href')
+    assert a.locator('#companionQR svg').count() == 1
+    if decode:
+        assert qr_text(a.locator('#companionQR svg')) == url
+
+    b = phone.open(url)
+    a.click('#begin')
+    assert not a.locator('#scoring').is_visible()
+    assert not a.locator('#showCompanion').is_visible()
+    for i in range(52):
+        assert text(a, '#stimulusLetter') == text(b, '#letter')
+        b.click('[data-score=incorrect]' if i == 1 else '[data-score=correct]')
+        a.keyboard.press('ArrowRight')
+    assert a.locator('#scoring').is_visible()
+
+    b = phone.open(url)  # the phone reloads the page: its Companion record survives
+    assert text(b, '#progress') == '52 marked'
+    b.click('#transfer')
+    code = b.locator('#code').input_value()
+    assert b.locator('#resultQR svg').count() == 1
+    link = b.evaluate('CompanionProtocol.resultUrl(document.getElementById("code").value, location.href)')
+    if decode:
+        assert qr_text(b.locator('#resultQR svg')) == link
+
+    ipad.close_page(a)  # c shares a's localStorage; an open a would reload on c's writes
+    c = ipad.open(link)
+    assert c.locator('#importCode').input_value() == code
+    c.click('#importButton')
+    assert text(c, '#scoredCount') == '52 / 52 marked'
+    assert c.locator('#scoreList [data-index="1"] [data-value=incorrect]').get_attribute('aria-pressed') == 'true'
+    c.click('#saveScores')
+    assert c.locator('#results').is_visible()
+    assert '1 letter to review' in text(c, '#resultHint')
+    c.click('#practiceWeak')
+    assert text(c, '#counter') == '1 / 1'
+
+    # Learner 2 on paper: a code from another Form is refused, then a manual Mark is saved.
+    c.select_option('#learner', '2')
+    c.click('#tabAssess')
+    c.click('#prepare')
+    c.click('#begin')
+    c.click('#pause')
+    accept_next_dialog(c)
+    c.click('#finishEarly')
+    c.locator('#importPanel summary').click()
+    c.fill('#importCode', code)
+    c.click('#importButton')
+    assert 'different assessment' in text(c, '#importMessage')
+    assert text(c, '#scoredCount') == '0 / 1 marked'
+    c.click('#scoreList [data-index="0"] [data-value=correct]')
+    c.click('#saveScores')
+    assert stat(c, 'Correct') == 1
+    c.select_option('#learner', '1')
+    c.click('#resultCase [data-value=mixed]')
+    assert stat(c, 'Correct') == 51, 'Learners keep separate Results'
