@@ -61,7 +61,7 @@ This is a lightweight companion prototype for the larger Sonelire literacy asses
 
 ## Run or deploy
 
-The application is a small static website: `sonelire-practice.html`, `companion.html`, the plain scripts `vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js` and `storage.js`, and `libs/qr.js`. The QR encoder is bundled locally with license notices in `libs/QR-LICENSE.txt`. There is no build step, npm installation, API or database server.
+The application is a small static website: `sonelire-practice.html`, `companion.html`, the plain scripts `vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js`, `storage.js` and `companion-record.js`, and `libs/qr.js`. The QR encoder is bundled locally with license notices in `libs/QR-LICENSE.txt`. There is no build step, npm installation, API or database server.
 
 To run locally from the repository directory:
 
@@ -73,11 +73,11 @@ Open <http://localhost:8000/sonelire-practice.html>. For use on another device, 
 
 To publish updates using the existing GitHub Pages deployment:
 
-1. If any script changed (`vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js`, `storage.js` or `libs/qr.js`), bump the release token: the `?v=` value on every `<script src>` in both `sonelire-practice.html` and `companion.html`, for example `?v=2.1.1` to `?v=2.1.2`. GitHub Pages lets browsers cache each file for 10 minutes, so without a new token a new page can run with an old cached script. `tests/release-token.test.js` checks that every script carries the same token. It can't tell whether you bumped it.
+1. If any script changed (`vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js`, `storage.js`, `companion-record.js` or `libs/qr.js`), bump the release token: the `?v=` value on every `<script src>` in both `sonelire-practice.html` and `companion.html`, for example `?v=2.1.1` to `?v=2.1.2`. GitHub Pages lets browsers cache each file for 10 minutes, so without a new token a new page can run with an old cached script. `tests/release-token.test.js` checks that every script carries the same token. It can't tell whether you bumped it.
 2. Commit and push. The pre-push hook (see [Testing](#testing)) runs the suite first.
 
 ```bash
-git add sonelire-practice.html companion.html vocabulary.js companion-protocol.js check.js results.js storage.js libs/ README.md HOW_TO_USE.md tests/
+git add sonelire-practice.html companion.html vocabulary.js companion-protocol.js check.js results.js storage.js companion-record.js libs/ README.md HOW_TO_USE.md tests/
 git commit -m "Update Sonelire Practice"
 git push
 ```
@@ -95,6 +95,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`check.js`](check.js) | Check lifecycle: Form preparation, Presentation, Marking, Import, save |
 | [`results.js`](results.js) | Each Learner's Results: recording a saved Check, letter status and totals, Needs practice letters, clearing |
 | [`storage.js`](storage.js) | Loads and saves the Learner, Results and Unfinished check through a storage adapter (browser or in-memory) |
+| [`companion-record.js`](companion-record.js) | The phone's Companion record: Marks, position, undo, restoring its saved copy and producing the Results code |
 | [`CONTEXT.md`](CONTEXT.md), [`docs/adr/`](docs/adr/) | Domain glossary and architecture decisions |
 | `libs/` | Bundled QR encoder and license notices |
 | `tests/` | Module tests and browser smoke test |
