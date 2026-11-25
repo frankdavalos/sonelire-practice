@@ -94,7 +94,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`companion-protocol.js`](companion-protocol.js) | Versioned Form and Results code encoding, companion links, QR rendering |
 | [`check.js`](check.js) | Check lifecycle: Form preparation, Presentation, Marking, Import, save |
 | [`results.js`](results.js) | Each Learner's Results: recording a saved Check, letter status and totals, Needs practice letters, clearing |
-| [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, and its saved form |
+| [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, letters Correct after each Check, and its saved form |
 | [`storage.js`](storage.js) | Loads and saves the Learner, Results and Unfinished check, and the Check log under its own key, through storage adapters (browser or in-memory) |
 | [`companion-record.js`](companion-record.js) | The phone's Companion record: Marks, position, undo, restoring its saved copy and producing the Results code |
 | [`manifest.webmanifest`](manifest.webmanifest), `icons/` | Home Screen install: web app manifest and icons. `scripts/make-icons.py` redraws the icons (needs Pillow) |

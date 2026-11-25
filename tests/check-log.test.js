@@ -100,3 +100,44 @@ test('struggles count mixed Checks for their letters, list in Case order, and ke
   assert.deepEqual(s('2','name','upper'),{stillNeedsPractice:['Q'],improved:[]});
   assert.deepEqual(s('1','sound','upper'),{stillNeedsPractice:['Q'],improved:[]});
 });
+
+test("progress: one point per Check record holding the Case's letters, oldest first, counting letters whose latest non-Skip Mark is Correct",()=>{
+  const log=logOf(
+    ['F-2',day(2),[{letter:'A',mark:'skip'},{letter:'B',mark:'correct'},{letter:'C',mark:'incorrect'}]],
+    ['F-1',day(1),[{letter:'A',mark:'correct'},{letter:'B',mark:'unsure'}]],
+    ['F-3',day(3),[{letter:'B',mark:'incorrect'},{letter:'C',mark:'correct'},{letter:'D',mark:'correct'}]]);
+  assert.deepEqual(L.progress(log,'1','name','upper'),[
+    {date:day(1),formId:'F-1',correct:1,total:26},
+    {date:day(2),formId:'F-2',correct:2,total:26},
+    {date:day(3),formId:'F-3',correct:3,total:26}]);
+});
+
+test('progress counts a mixed Check towards uppercase and lowercase, out of 52 for mixed, and keeps Learners and Skills apart',()=>{
+  const log=logOf(
+    ['UP',day(1),[{letter:'A',mark:'correct'}]],
+    ['MIX',day(2),[{letter:'B',mark:'correct'},{letter:'b',mark:'correct'},{letter:'c',mark:'incorrect'}],{c:'mixed'}],
+    ['CHILD-2',day(3),[{letter:'C',mark:'correct'}],{learner:'2'}],
+    ['SOUND',day(4),[{letter:'D',mark:'correct'}],{skill:'sound'}]);
+  const points=(...a)=>L.progress(log,...a).map(p=>[p.formId,p.correct,p.total]);
+  assert.deepEqual(points('1','name','upper'),[['UP',1,26],['MIX',2,26]]);
+  assert.deepEqual(points('1','name','lower'),[['MIX',1,26]]);
+  assert.deepEqual(points('1','name','mixed'),[['UP',1,52],['MIX',3,52]]);
+  assert.deepEqual(points('2','name','upper'),[['CHILD-2',1,26]]);
+  assert.deepEqual(points('1','sound','upper'),[['SOUND',1,26]]);
+});
+
+test("the last progress point equals the Today grid's Correct total when both are built from the same saves",()=>{
+  const R=globalThis.SonelireResults,saves=[
+    ['F-1',day(1),[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'},{letter:'C',mark:'skip'}]],
+    ['MIX',day(2),[{letter:'B',mark:'correct'},{letter:'a',mark:'correct'},{letter:'A',mark:'skip'},{letter:'C',mark:'correct'}],{c:'mixed'}],
+    ['F-3',day(3),[{letter:'C',mark:'unsure'},{letter:'D',mark:'skip'}]],
+    ['F-3',day(4),[{letter:'C',mark:'incorrect'},{letter:'D',mark:'correct'}]],
+    ['F-5',day(5),[{letter:'A',mark:'incorrect'},{letter:'E',mark:'skip'}]]];
+  let log=L.empty(),results=R.empty();
+  for(const [formId,date,marks,opts] of saves){
+    const saved=completed(formId,marks,opts);
+    log=L.record(log,saved,date);results=R.recordCheck(results,saved,date);
+  }
+  for(const c of ['upper','lower','mixed'])
+    assert.equal(L.progress(log,'1','name',c).at(-1).correct,R.summarize(results,'1','name',c).correct,c);
+});
