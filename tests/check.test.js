@@ -87,6 +87,8 @@ test('Import preview lists letters whose existing Mark would change',()=>{
   const preview=C.previewImport(c,phoneCode({0:'correct',1:'incorrect',2:'skip'}));
   assert.deepEqual(preview.conflicts,['B']);
   assert.deepEqual(C.applyImport(c,preview).marks,{0:'correct',1:'incorrect',2:'skip'});
+  assert.throws(()=>C.applyImport(c,{...preview,formId:'other'}),/different assessment form/);
+  assert.throws(()=>C.applyImport(C.begin('1',form),preview));
 });
 
 test('restore and toStored keep the v1 stored shape (docs/adr/0001)',()=>{
@@ -98,4 +100,22 @@ test('restore and toStored keep the v1 stored shape (docs/adr/0001)',()=>{
   for(const status of ['present','paused'])assert.equal(C.restore({...v1,status,scores:{}}).phase,'presentation');
   assert.equal(C.toStored(C.begin('1',form)).status,'present');
   assert.equal(JSON.stringify(C.toStored(c)),JSON.stringify(JSON.parse(JSON.stringify(C.toStored(c)))));
+});
+
+test('random operation sequences keep the Check rules and survive a storage round trip',()=>{
+  let seed=7;const rand=()=>(seed=(seed*1103515245+12345)%2147483648)/2147483648;
+  const ops=[c=>C.next(c),c=>C.back(c),c=>C.endPresentation(c),c=>C.mark(c,Math.floor(rand()*(c.shownCount+1)),[...SonelireVocabulary.marks,null][Math.floor(rand()*5)]),c=>C.markRemainingCorrect(c),c=>C.clearMarks(c),c=>C.restore(JSON.parse(JSON.stringify(C.toStored(c))))];
+  for(let run=0;run<300;run++){
+    const f=C.prepareForm('sound',['upper','lower','mixed'][run%3],'random',{random:rand,newId:()=>'R-'+run});
+    let c=C.begin('1',f);
+    for(let step=0;step<80;step++){
+      let n;try{n=ops[Math.floor(rand()*ops.length)](c)}catch(e){continue}
+      assert.ok(n.shownCount>=n.position+1&&n.shownCount<=f.seq.length,'shown count covers position');
+      assert.ok(n.shownCount>=c.shownCount,'shown count never shrinks');
+      assert.ok(Object.keys(n.marks).every(i=>+i<n.shownCount),'marks only for shown letters');
+      if(c.phase==='marking')assert.equal(n.phase,'marking','Marking never returns to Presentation');
+      assert.deepEqual(C.restore(JSON.parse(JSON.stringify(C.toStored(n)))),n,'storage round trip');
+      c=n;
+    }
+  }
 });
