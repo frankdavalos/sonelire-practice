@@ -1,5 +1,7 @@
 # Install to the Home Screen without a service worker; backups are the durability guarantee
 
+_Partly superseded by ADR 0004: the install support below stays, but the iPad is used in Safari, not as a Home Screen app, and the hand checks planned in #19 were dropped._
+
 Results and the Check log live only in the browser's localStorage, which Safari deletes after 7 days without use. The main page therefore links a web app manifest (`display: standalone`, start URL the main page, scope the folder it is served from, so it works locally and on GitHub Pages) with icons, a 180×180 Apple touch icon and the iOS head tags, so a parent can add it to the iPad Home Screen and open it full-screen. On every open the page calls `navigator.storage.persist()` when it exists and ignores the answer. It registers **no service worker**.
 
 None of this guarantees the data survives. What Safari does is dated and partly anecdotal (as of 2026-11):
