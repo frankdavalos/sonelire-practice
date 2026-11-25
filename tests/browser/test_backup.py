@@ -147,3 +147,27 @@ def test_restore_replaces_the_results_in_the_today_grid_and_they_survive_a_reloa
     page.select_option('#learner', '1')
     assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (2, 0), "Child 1 is back to the backup's Results"
     assert cells(page)[:3] == [['A', True, 'correct'], ['B', True, 'correct'], ['C', False, 'not-assessed']]
+
+
+def seed_old_check(page):
+    """Save a Check record dated long ago, never backed up, and reload."""
+    record = {'date': '2020-01-06T10:00:00.000Z', 'learner': '1', 'skill': 'name', 'case': 'upper', 'formId': 'OLD',
+              'shownCount': 1, 'marks': [{'letter': 'A', 'mark': 'correct'}]}
+    page.evaluate('l => localStorage.setItem("sonelire-check-log-v1", JSON.stringify(l))',
+                  {'version': 1, 'lastBackup': None, 'checks': [record]})
+    page.reload()
+
+
+def test_backup_reminder_appears_for_an_old_check_never_backed_up_and_goes_after_an_export(page):
+    page.click('#tabResults')
+    assert page.locator('#backupReminder').is_hidden(), 'no Check records, no reminder'
+    seed_old_check(page)
+    page.click('#tabResults')
+    assert page.locator('#backupReminder').is_visible()
+    page.click('#resultCase [data-value=lower]')
+    assert page.locator('#resultCase [data-value=lower]').get_attribute('aria-pressed') == 'true', 'not modal'
+    export_backup(page)
+    assert page.locator('#backupReminder').is_hidden()
+    page.reload()
+    page.click('#tabResults')
+    assert page.locator('#backupReminder').is_hidden()

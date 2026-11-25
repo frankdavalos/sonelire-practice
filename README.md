@@ -45,7 +45,7 @@ Sonelire Practice stores its learner results and unfinished check in the browser
 
 - Data is separate between browsers, devices and browser storage contexts; it does not synchronize. The phone companion stores its unfinished form separately. Transfer is explicit.
 - Clearing site data, using private browsing or browser storage eviction can cause records to be lost.
-- The companion can export and import one assessment’s marks. The Results tab can export a Backup file of both Learners’ Results and the Check log, and restore from one after a preview; the Unfinished check is not included.
+- The companion can export and import one assessment’s marks. The Results tab can export a Backup file of both Learners’ Results and the Check log, and restore from one after a preview; the Unfinished check is not included. It reminds the adult to export one when a saved Check not yet backed up is more than 30 days old.
 - Andika is loaded from Google Fonts; this makes a third-party font request, but the application does not send assessment results to that service. Hosting providers may retain ordinary request logs.
 - Results are stored locally, not encrypted by the application, and are accessible to others using the same browser profile.
 
@@ -94,7 +94,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`companion-protocol.js`](companion-protocol.js) | Versioned Form and Results code encoding, companion links, QR rendering |
 | [`check.js`](check.js) | Check lifecycle: Form preparation, Presentation, Marking, Import, save |
 | [`results.js`](results.js) | Each Learner's Results: recording a saved Check, letter status and totals, Needs practice letters, clearing |
-| [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, letters Correct after each Check, clearing a Case's letters, and its saved form with the last backup time |
+| [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, letters Correct after each Check, clearing a Case's letters, whether it needs a backup, and its saved form with the last backup time |
 | [`backup.js`](backup.js) | The Backup file: exports both Learners' Results and the Check log, and reads one back after checking it, with a summary for the restore preview |
 | [`storage.js`](storage.js) | Loads and saves the Learner, Results and Unfinished check, and the Check log under its own key, through storage adapters (browser or in-memory) |
 | [`companion-record.js`](companion-record.js) | The phone's Companion record: Marks, position, undo, restoring its saved copy and producing the Results code |

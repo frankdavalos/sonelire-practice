@@ -194,3 +194,24 @@ test('a cleared Check log keeps its last backup time and restores from its store
   assert.equal(cleared.lastBackup,'2026-11-20T08:00:00.000Z');
   assert.deepEqual(L.restore(JSON.parse(JSON.stringify(L.toStored(cleared)))),cleared);
 });
+
+test('a Check log with no Check records never needs a backup',()=>{
+  assert.equal(L.needsBackup(L.empty(),new Date('2026-11-24T10:00:00.000Z')),false);
+});
+
+test('never backed up, a Check record saved more than 30 days ago needs a backup; one saved exactly 30 days ago does not yet',()=>{
+  const log=L.record(L.empty(),completed('F-1',[{letter:'A',mark:'correct'}]),'2026-10-25T10:00:00.000Z');
+  assert.equal(L.needsBackup(log,new Date('2026-11-24T10:00:00.000Z')),false,'exactly 30 days');
+  assert.equal(L.needsBackup(log,new Date('2026-11-24T10:00:00.001Z')),true,'just over 30 days');
+});
+
+test('a backup covers every Check record saved before it, however old; only an old Check record saved after it needs another',()=>{
+  const now=new Date('2026-11-24T10:00:00.000Z');
+  let log=L.record(L.empty(),completed('F-1',[{letter:'A',mark:'correct'}]),'2026-01-05T10:00:00.000Z');
+  log=L.withLastBackup(log,'2026-02-01T10:00:00.000Z');
+  assert.equal(L.needsBackup(log,now),false,'every Check record is older than the last backup');
+  log=L.record(log,completed('F-2',[{letter:'B',mark:'correct'}]),'2026-11-20T10:00:00.000Z');
+  assert.equal(L.needsBackup(log,now),false,'the Check record saved after the backup is only 4 days old');
+  log=L.record(log,completed('F-3',[{letter:'C',mark:'correct'}]),'2026-03-01T10:00:00.000Z');
+  assert.equal(L.needsBackup(log,now),true,'a Check record saved after the backup is more than 30 days old');
+});

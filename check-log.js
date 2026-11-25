@@ -67,6 +67,12 @@
       return marks.length?[{...r,shownCount:marks.length,marks}]:[];
     }),log.lastBackup);
   }
+  const backupAge=30*24*60*60*1000;
+  /* now: Date. True when a Check record saved after the last backup (or any, if never backed up) is more than 30 days old. */
+  function needsBackup(log,now){
+    const notBackedUp=r=>log.lastBackup===null||Date.parse(r.date)>Date.parse(log.lastBackup);
+    return log.checks.some(r=>notBackedUp(r)&&now-Date.parse(r.date)>backupAge);
+  }
   const toStored=log=>({version:1,lastBackup:log.lastBackup,checks:log.checks.map(r=>({...r,marks:r.marks.map(m=>({...m}))}))});
   const isText=s=>typeof s==='string'&&s.length>0;
   const isCase=c=>{try{V.lettersFor(c);return true}catch(e){return false}};
@@ -77,5 +83,5 @@
     if(stored?.version!==1||!Array.isArray(stored.checks)||!stored.checks.every(readable))return empty();
     return make(stored.checks,isText(stored.lastBackup)?stored.lastBackup:null);
   }
-  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,clear,toStored,restore});
+  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,clear,needsBackup,toStored,restore});
 })(globalThis);
