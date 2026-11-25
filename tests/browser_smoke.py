@@ -7,7 +7,7 @@ base="https://frankdavalos.github.io/sonelire-practice/sonelire-practice.html"
 def load(page,filename,url,storage=None):
  html=(root/filename).read_text()
  html=re.sub(r'<link[^>]+fonts.googleapis.com[^>]+>', '', html)
- html=re.sub(r'<script src="([^"]+)"></script>',lambda m:'<script>'+ (root/m[1]).read_text()+'</script>',html)
+ html=re.sub(r'<script src="([^"?#]+)(?:[?#][^"]*)?"></script>',lambda m:'<script>'+ (root/m[1]).read_text()+'</script>',html)
  # Simulate location inputs and storage; never contact a host.
  html=html.replace('location.href','testLocation.href').replace('location.hash','testLocation.hash').replace('location.pathname','testLocation.pathname').replace('location.search','testLocation.search').replace("history.replaceState(null,'',testLocation.pathname+testLocation.search)","testLocation.hash=''")
  pre='<script>const testLocation=new URL('+json.dumps(url)+');const store='+json.dumps(storage or {})+';Object.defineProperty(window,"localStorage",{value:{getItem:k=>store[k]??null,setItem:(k,v)=>store[k]=String(v),removeItem:k=>delete store[k]}});</script>'
