@@ -125,6 +125,18 @@ def test_without_file_sharing_share_results_is_hidden_and_save_code_file_still_w
     assert open(download.value.path()).read() == 'SON1R.F1.name.upper.' + UPPER + '.C' + '-' * 25
 
 
+def test_without_file_sharing_copy_code_still_copies_the_results_code(device):
+    phone = device(390, 844, permissions=['clipboard-read', 'clipboard-write'])
+    phone.context.add_init_script('navigator.canShare = data => !data?.files; navigator.share = async () => {};')
+    page = phone.open(LINK)
+    page.click('[data-score=correct]')
+    page.click('#transfer')
+    assert not page.locator('#share').is_visible()
+    page.click('#copy')
+    expect(page.locator('#copyStatus')).to_contain_text('Copied on this device')
+    assert page.evaluate('navigator.clipboard.readText()') == 'SON1R.F1.name.upper.' + UPPER + '.C' + '-' * 25
+
+
 def test_cancelling_the_share_sheet_shows_no_error(phone):
     phone.context.add_init_script(FILE_SHARING + """
 navigator.share = () => { window.cancelled = true; return Promise.reject(new DOMException('Share canceled', 'AbortError')); };

@@ -152,3 +152,18 @@ test('the last backup time survives recording a Check, the stored form and resto
   assert.equal(L.restore(stored).lastBackup,'2026-11-20T08:00:00.000Z');
   assert.equal(L.restore({...stored,lastBackup:7}).lastBackup,null,'an unreadable time restores as never');
 });
+
+test('a Check ended after 10 of 26 letters records only those 10 letters, so the unshown 16 have no history',()=>{
+  require('../check.js');const C=globalThis.SonelireCheck;
+  const form=C.prepareForm('name','upper','alpha',{newId:()=>'EARLY'});
+  let check=C.begin('1',form);
+  for(let i=1;i<10;i++)check=C.next(check);
+  check=C.markRemainingCorrect(C.endPresentation(check));
+  const done=C.complete(check);
+  const log=L.record(L.empty(),done,'2026-11-24T10:00:00.000Z');
+  const [record]=log.checks;
+  assert.equal(record.shownCount,10);
+  assert.deepEqual(record.marks.map(m=>m.letter),[...'ABCDEFGHIJ']);
+  for(const letter of [...'ABCDEFGHIJ'])assert.equal(L.letterHistory(log,'1','name',letter).length,1);
+  for(const letter of [...'KLMNOPQRSTUVWXYZ'])assert.deepEqual(L.letterHistory(log,'1','name',letter),[],`${letter} was never shown`);
+});

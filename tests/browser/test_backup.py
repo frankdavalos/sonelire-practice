@@ -2,7 +2,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from steps import check_list, present, save_check, text
+from steps import check_list, present, save_check, stat, text
 
 
 def export_backup(page):
@@ -106,3 +106,44 @@ def test_a_damaged_wrong_or_oversized_file_is_refused_with_saved_data_unchanged(
     page.click('#tabResults')
     assert len(check_list(page)) == 1 and form_id in check_list(page)[0]
     assert text(page, '#lastBackup') != 'Last backup: never'
+
+
+def short_date(page, iso):
+    """A date as the page shows it."""
+    return page.evaluate("iso => new Date(iso).toLocaleDateString(undefined, {day: 'numeric', month: 'short', year: 'numeric'})", iso)
+
+
+def test_the_restore_preview_names_the_date_of_the_latest_check_in_the_backup(page):
+    save_check(page, 'c')
+    save_check(page, 'c')
+    _, backup = export_backup(page)
+    older, newer = '2026-03-14T12:00:00.000Z', '2026-05-02T12:00:00.000Z'
+    backup['checks'][0]['date'], backup['checks'][1]['date'] = newer, older
+    message = choose_backup(page, backup, confirm=False)
+    assert f'Latest check: {short_date(page, newer)}\n' in message
+    assert short_date(page, older) not in message
+
+
+def cells(page):
+    """Each letter cell of the Today grid: (letter, shows a last-checked date, mark class)."""
+    return page.locator('#matrix .cell').evaluate_all(
+        "els => els.map(e => [e.dataset.letter, !!e.querySelector('.when'), e.className.replace('cell ', '')])")
+
+
+def test_restore_replaces_the_results_in_the_today_grid_and_they_survive_a_reload(page):
+    save_check(page, 'cc')
+    _, backup = export_backup(page)
+    save_check(page, 'iic')
+    page.select_option('#learner', '2')
+    save_check(page, 'cc')
+    page.click('#tabResults')
+    choose_backup(page, backup)
+    assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (0, 0), "Child 2's newer Results are replaced at once"
+    page.reload()  # straight away: no later interaction re-saves the Results
+    page.click('#tabResults')
+    assert page.locator('#learner').input_value() == '2'
+    assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (0, 0), "Child 2's newer Results stay replaced"
+    assert not any(has_date for _, has_date, _ in cells(page))
+    page.select_option('#learner', '1')
+    assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (2, 0), "Child 1 is back to the backup's Results"
+    assert cells(page)[:3] == [['A', True, 'correct'], ['B', True, 'correct'], ['C', False, 'not-assessed']]
