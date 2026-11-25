@@ -1,6 +1,6 @@
 """Companion: the phone's private scoring sheet for one Form."""
 from playwright.sync_api import expect
-from steps import COMPANION, UPPER, accept_next_dialog, pressed, text
+from steps import COMPANION, FILE_SHARING, UPPER, accept_next_dialog, pressed, text
 
 FORM = 'SON1A.F1.name.upper.' + UPPER
 LINK = COMPANION + '#form=' + FORM
@@ -101,3 +101,50 @@ def test_v1_record_with_miss_marks_restores(phone):
     assert page.locator('#overview button[aria-label^="Item 1,"]').get_attribute('aria-label') == 'Item 1, A, Incorrect'
     page.click('#prev')
     assert pressed(page, '[data-score=incorrect]')
+
+
+def test_share_results_sends_the_results_code_as_one_text_file(phone):
+    phone.context.add_init_script(FILE_SHARING)
+    page = phone.open(LINK)
+    page.click('[data-score=incorrect]')
+    page.click('#transfer')
+    page.click('#share')
+    assert page.wait_for_function('window.shared').json_value() == [
+        {'name': 'sonelire-results-F1.txt', 'type': 'text/plain', 'text': 'SON1R.F1.name.upper.' + UPPER + '.I' + '-' * 25}]
+
+
+def test_without_file_sharing_share_results_is_hidden_and_save_code_file_still_works(phone):
+    phone.context.add_init_script('navigator.canShare = data => !data?.files; navigator.share = async () => {};')
+    page = phone.open(LINK)
+    page.click('[data-score=correct]')
+    page.click('#transfer')
+    assert page.locator('#output').is_visible()
+    assert not page.locator('#share').is_visible()
+    with page.expect_download() as download:
+        page.click('#download')
+    assert open(download.value.path()).read() == 'SON1R.F1.name.upper.' + UPPER + '.C' + '-' * 25
+
+
+def test_cancelling_the_share_sheet_shows_no_error(phone):
+    phone.context.add_init_script(FILE_SHARING + """
+navigator.share = () => { window.cancelled = true; return Promise.reject(new DOMException('Share canceled', 'AbortError')); };
+""")
+    page = phone.open(LINK)
+    page.click('[data-score=correct]')
+    page.click('#transfer')
+    page.click('#share')
+    page.wait_for_function('window.cancelled')
+    page.evaluate('new Promise(r => setTimeout(r))')
+    assert text(page, '#copyStatus') == ''
+    assert not page.locator('#error').is_visible()
+
+
+def test_a_failed_share_points_to_the_other_transfer_options(phone):
+    phone.context.add_init_script(FILE_SHARING + """
+navigator.share = () => Promise.reject(new DOMException('Not allowed', 'NotAllowedError'));
+""")
+    page = phone.open(LINK)
+    page.click('[data-score=correct]')
+    page.click('#transfer')
+    page.click('#share')
+    expect(page.locator('#copyStatus')).to_have_text('Sharing did not work. Copy the code or save the code file instead.')

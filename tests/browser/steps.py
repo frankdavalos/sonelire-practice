@@ -3,6 +3,13 @@ SITE = 'https://frankdavalos.github.io/sonelire-practice/'
 MAIN = SITE + 'sonelire-practice.html'
 COMPANION = SITE + 'companion.html'
 UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+# Init script for a phone that can share files: each share's files land in window.shared.
+FILE_SHARING = """
+navigator.canShare = data => Array.isArray(data?.files);
+navigator.share = async data => {
+  window.shared = await Promise.all(data.files.map(async f => ({name: f.name, type: f.type, text: await f.text()})));
+};
+"""
 
 
 def text(page, selector):
