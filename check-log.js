@@ -77,6 +77,18 @@
     }
     return result;
   }
+  /* Splits items into the fewest runs of at most max, as evenly as possible, larger runs first: 7 by 5 → 4 + 3. */
+  function splitEvenly(items,max){
+    const count=Math.ceil(items.length/max),runs=[];
+    for(let i=0,start=0;i<count;i++){const size=Math.ceil((items.length-start)/(count-i));runs.push(items.slice(start,start+=size))}
+    return runs;
+  }
+  /* The Practice sets (CONTEXT.md) for one Learner, Skill and Case: the letters that Need practice by their Results, Slipped back
+     first and then the rest, each in Case order, split into sets of at most five. [] when nothing Needs practice. */
+  function practiceSets(results,log,learner,skill,c){
+    const needing=R.needsPractice(results,learner,skill,c),slipped=new Set(glance(log,learner,skill,c).slippedBack);
+    return splitEvenly([...needing.filter(l=>slipped.has(l)),...needing.filter(l=>!slipped.has(l))],5);
+  }
   /* Returns a new Check log without the Case's letters' Marks in this Learner and Skill's Check records; records left with no Marks are deleted. */
   function clear(log,learner,skill,c){
     const inCase=new Set(V.lettersFor(c));
@@ -102,5 +114,5 @@
     if(stored?.version!==1||!Array.isArray(stored.checks)||!stored.checks.every(readable))return empty();
     return make(stored.checks,isText(stored.lastBackup)?stored.lastBackup:null);
   }
-  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,glance,clear,needsBackup,toStored,restore});
+  root.SonelireCheckLog=Object.freeze({empty,withLastBackup,record,checks,letterHistory,struggles,progress,glance,practiceSets,clear,needsBackup,toStored,restore});
 })(globalThis);

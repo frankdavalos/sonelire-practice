@@ -82,7 +82,7 @@ Open **Practice** and select the options that fit your child's needs.
 | **Names** | Reminds the adult to ask for or model the letter name. |
 | **Sounds** | Reminds the adult to ask for or model a familiar letter sound. |
 | **All letters** | Reviews the entire selected alphabet deck. |
-| **Needs practice** | Shows only letters marked incorrect or unsure for this learner, case and skill. |
+| **Needs practice** | Shows only letters marked incorrect or unsure for this learner, case and skill, at most five at a time (see [section 6](#6-practice-letters-that-need-work)). |
 | **Shuffle** | Switches between randomized order (on) and alphabetical order (off), with uppercase and lowercase paired when mixed. |
 | **Focus mode** | Hides the main controls and enlarges the letter; use **Exit focus** to return. |
 
@@ -157,7 +157,7 @@ Open **Results** and select the case and skill you want to review. **At a glance
   - **Still learning:** every other letter that needs practice, including one checked for the first time.
 
   A line with no letters is left out. Skipped letters never change a letter's line.
-- The **Practice** button names the letters that need practice, for example "Practice B, D, H →", or gives their number when there are more than five.
+- The **Practice** button names the first practice set, for example "Practice B, D, H →" (see [section 6](#6-practice-letters-that-need-work)).
 
 The letter grid shows the latest recorded status for each selected letter and the date it was last checked. Letters that were never checked, or only skipped, say Not checked yet and show no date. An ↑ marks a recent win and a ↓ marks a letter that slipped back.
 
@@ -187,7 +187,9 @@ These are informal observations, not validated mastery levels, grade-level bench
 
 ## 6. Practice letters that need work
 
-From **Results**, select the **Practice** button below the grid. This opens a practice deck containing only letters marked incorrect or unsure in the selected case and skill, for the selected child.
+From **Results**, select the **Practice** button below the grid. This opens a practice deck of letters marked incorrect or unsure in the selected case and skill, for the selected child.
+
+To keep the deck short for a young child, it holds at most five letters, called a practice set. When more than five letters need practice, they are split into sets of three to five as evenly as possible (for example 7 letters make sets of 4 and 3), and numbered buttons appear beside **Needs practice** to choose a set. Letters that slipped back in the latest check come first, then the rest in alphabetical order, so set 1 holds the letters to practise first. **Practice again ↻** repeats the same set; choose the next number when you are ready to move on. The sets are worked out again from the saved results every time, so after a new check the letters now correct drop out and later letters move into set 1. Changing the learner, case, skill or selection goes back to set 1.
 
 You can also select **Needs practice** directly in the Practice tab. If no letters are available, switch to **All letters** or run a letter check. Unchecked and skipped letters are not automatically included in the targeted deck.
 

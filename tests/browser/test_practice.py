@@ -1,5 +1,23 @@
 """Practice view: moving through a Practice deck."""
-from steps import swipe
+from steps import pressed, save_check, saved_data, seed, swipe, text
+
+
+def needing_practice(letters, learner='1', skill='name'):
+    """Saved data where each given letter's Result is Incorrect."""
+    return saved_data(results={(learner, skill, letter): 'miss' for letter in letters})
+
+
+def deck(page):
+    """Every letter in the current deck, in order, from its first card; leaves the deck on its last card."""
+    seen = [text(page, '#letter')]
+    while text(page, '#next') != 'Practice again ↻':
+        page.click('#next')
+        seen.append(text(page, '#letter'))
+    return seen
+
+
+def set_buttons(page):
+    return page.locator('#setGroup button')
 
 
 def test_next_and_previous_move_through_the_deck(page):
@@ -84,3 +102,64 @@ def test_needs_practice_with_no_results_shows_an_empty_deck_message(page):
     assert 'No letters currently marked as needing practice' in page.locator('#practiceMessage').inner_text()
     assert page.locator('#next').is_disabled()
     assert page.locator('#focus').is_disabled()
+
+
+def test_needs_practice_with_more_than_five_letters_practises_one_set_at_a_time(page):
+    seed(page, needing_practice('ABCDEFGHIJK'))  # 11 letters: sets [A B C D] [E F G H] [I J K]
+    assert not page.locator('#setGroup').is_visible(), 'All letters has no sets'
+    page.click('#filterGroup [data-filter=weak]')
+    assert page.locator('#setGroup').is_visible()
+    assert set_buttons(page).all_inner_texts() == ['1', '2', '3']
+    assert set_buttons(page).first.get_attribute('aria-label') == 'Set 1 of 3'
+    assert pressed(page, '#setGroup [data-set="1"]')
+    assert text(page, '#counter') == '1 / 4'
+    assert sorted(deck(page)) == list('ABCD')
+    page.click('#setGroup [data-set="2"]')
+    assert pressed(page, '#setGroup [data-set="2"]') and not pressed(page, '#setGroup [data-set="1"]')
+    assert text(page, '#counter') == '1 / 4', 'a chosen set starts from its first card'
+    assert sorted(deck(page)) == list('EFGH')
+
+
+def test_practice_again_at_the_end_of_a_set_repeats_the_same_set(page):
+    seed(page, needing_practice('ABCDEFGHIJK'))
+    page.click('#filterGroup [data-filter=weak]')
+    page.click('#setGroup [data-set="3"]')
+    first_round = deck(page)
+    page.click('#next')
+    assert text(page, '#counter') == '1 / 3'
+    assert pressed(page, '#setGroup [data-set="3"]'), 'never moves on to the next set'
+    assert sorted(deck(page)) == sorted(first_round) == list('IJK')
+    assert text(page, '#counter') == '3 / 3'
+    page.click('#shuffle')
+    assert text(page, '#counter') == '1 / 3', 'toggling Shuffle starts the set from its first card'
+    assert pressed(page, '#setGroup [data-set="3"]') and deck(page) == list('IJK'), 'with Shuffle off the set keeps its order'
+
+
+def test_changing_learner_case_skill_or_filter_goes_back_to_set_1(page):
+    seed(page, saved_data(results={(who, skill, letter): 'miss' for who in '12' for skill in ('name', 'sound')
+                                   for letter in 'ABCDEFGHIJKabcdefghijk'}))
+    page.click('#filterGroup [data-filter=weak]')
+    for change in (lambda: page.select_option('#learner', '2'), lambda: page.click('#skillGroup [data-skill=sound]'),
+                   lambda: page.click('#caseGroup [data-case=lower]'),
+                   lambda: (page.click('#filterGroup [data-filter=all]'), page.click('#filterGroup [data-filter=weak]'))):
+        page.click('#setGroup [data-set="2"]')
+        change()
+        assert pressed(page, '#setGroup [data-set="1"]') and not pressed(page, '#setGroup [data-set="2"]')
+
+
+def test_needs_practice_with_five_letters_or_fewer_has_no_set_choice(page):
+    seed(page, needing_practice('BDFHK'))
+    page.click('#filterGroup [data-filter=weak]')
+    assert not page.locator('#setGroup').is_visible()
+    assert text(page, '#counter') == '1 / 5'
+    assert sorted(deck(page)) == list('BDFHK')
+
+
+def test_a_check_that_shrinks_the_sets_falls_back_to_set_1(page):
+    seed(page, needing_practice('ABCDEFGHIJK'))
+    page.click('#filterGroup [data-filter=weak]')
+    page.click('#setGroup [data-set="3"]')
+    save_check(page, 'cccccccc')  # A to H now Correct: one set [I J K] is left
+    page.click('#tabPractice')
+    assert not page.locator('#setGroup').is_visible()
+    assert text(page, '#counter') == '1 / 3' and sorted(deck(page)) == list('IJK')

@@ -24,7 +24,7 @@ Version 2 adds a complete **Assess → Review → Practice → Reassess** workfl
 | Child-facing presentation | Large letters with no scoring buttons or correctness feedback; a discreet Pause control remains available. |
 | Post-check scoring | Enter correct, incorrect, unsure/no response or skipped marks after presentation. |
 | Results | View the latest recorded performance for each letter, case and skill. |
-| Targeted practice | Generate a deck of letters marked incorrect or unsure. |
+| Targeted practice | Generate a deck of letters marked incorrect or unsure, at most five at a time, with letters that slipped back first. |
 | Local persistence | Save results and resume one unfinished check in the same browser. |
 | Home Screen install | Add the site to the iPad Home Screen from Safari; it opens full screen and asks the iPad to keep its data. |
 | Check log | At a glance (letters correct, the change since the previous check, Recent wins / Slipped back / Still learning, and ↑ / ↓ on the grid), Struggled before (Improved), each letter's history, and a Progress chart of letters correct after each check. |
@@ -97,7 +97,7 @@ The application uses [Andika](https://software.sil.org/andika/) via Google Fonts
 | [`companion-protocol.js`](companion-protocol.js) | Versioned Form and Results code encoding, companion links, QR rendering |
 | [`check.js`](check.js) | Check lifecycle: Form preparation, Presentation, Marking, Import, save |
 | [`results.js`](results.js) | Each Learner's Results: recording a saved Check, letter status and totals, Needs practice letters, clearing |
-| [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, letters Correct after each Check, clearing a Case's letters, whether it needs a backup, and its saved form with the last backup time |
+| [`check-log.js`](check-log.js) | The Check log: one Check record per saved Check, the list of past Checks, each letter's history, letters still needing practice or Improved, letters Correct after each Check, the Practice sets, clearing a Case's letters, whether it needs a backup, and its saved form with the last backup time |
 | [`backup.js`](backup.js) | The Backup file: exports both Learners' Results and the Check log, and reads one back after checking it, with a summary for the restore preview |
 | [`storage.js`](storage.js) | Loads and saves the Learner, Results and Unfinished check, and the Check log under its own key, through storage adapters (browser or in-memory) |
 | [`companion-record.js`](companion-record.js) | The phone's Companion record: Marks, position, undo, restoring its saved copy and producing the Results code |

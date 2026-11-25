@@ -279,3 +279,52 @@ test('glance: Unsure before and Correct now is a Recent win too',()=>{
   const log=logOf(['F-1',day(1),[{letter:'A',mark:'unsure'}]],['F-2',day(2),[{letter:'A',mark:'correct'}]]);
   assert.deepEqual(L.glance(log,'1','name','upper').recentWin,['A']);
 });
+
+const R=globalThis.SonelireResults;
+const UPPER='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+/* Results where each given letter (learner 1, names) has the stored status, default Incorrect. */
+const resultsOf=(letters,status='miss',{learner='1',skill='name'}={})=>{
+  const r=R.empty();for(const l of letters)r[learner][skill][l]={status,date:day(1),form:'SEED'};return r;
+};
+
+test('practiceSets: n letters that Need practice split into the fewest sets of at most five, as evenly as possible, larger sets first',()=>{
+  const sizes=n=>L.practiceSets(resultsOf(UPPER.slice(0,n)),L.empty(),'1','name','upper').map(s=>s.length);
+  assert.deepEqual(sizes(0),[]);
+  assert.deepEqual(sizes(1),[1]);
+  assert.deepEqual(sizes(5),[5]);
+  assert.deepEqual(sizes(6),[3,3]);
+  assert.deepEqual(sizes(7),[4,3]);
+  assert.deepEqual(sizes(11),[4,4,3]);
+  assert.deepEqual(sizes(12),[4,4,4]);
+  assert.deepEqual(sizes(13),[5,4,4]);
+  assert.deepEqual(L.practiceSets(resultsOf(UPPER.slice(0,7)),L.empty(),'1','name','upper'),[['A','B','C','D'],['E','F','G']],'sets are taken in turn, in Case order');
+});
+
+const marksOf=(spec)=>[...spec].map((k,i)=>({letter:UPPER[i],mark:{c:'correct',i:'incorrect',n:'unsure'}[k]}));
+
+test('practiceSets: Slipped back letters come first, then the rest in Case order, and every letter that Needs practice is in exactly one set',()=>{
+  const log=logOf(['F-1',day(1),marksOf('cicicic')],['F-2',day(2),marksOf('iicinin')]);  // A, E, G slipped back; B, D, F still learning
+  const results=resultsOf(['A','B','D','E','F','G','H']);  // H Needs practice by its Result but has no Standing in the Check log
+  const sets=L.practiceSets(results,log,'1','name','upper');
+  assert.deepEqual(sets,[['A','E','G','B'],['D','F','H']]);
+  assert.deepEqual(sets.flat().sort(),R.needsPractice(results,'1','name','upper'));
+});
+
+test('practiceSets: with a single Check there is no Slipped back, so the order is plain Case order',()=>{
+  const log=logOf(['F-1',day(1),marksOf('iciiciii')]);
+  assert.deepEqual(L.practiceSets(resultsOf(['A','C','D','F','G','H']),log,'1','name','upper'),[['A','C','D'],['F','G','H']]);
+});
+
+test('practiceSets: Learners and Skills are kept apart, and mixed Case lines up both forms',()=>{
+  const log=logOf(
+    ['MIX-1',day(1),[{letter:'b',mark:'correct'},{letter:'C',mark:'correct'}],{c:'mixed'}],
+    ['MIX-2',day(2),[{letter:'b',mark:'incorrect'},{letter:'C',mark:'incorrect'}],{c:'mixed'}],
+    ['CHILD-2',day(3),[{letter:'A',mark:'correct'}],{learner:'2'}],
+    ['CHILD-2b',day(4),[{letter:'A',mark:'incorrect'}],{learner:'2'}]);
+  const results=resultsOf(['a','A','b','C','z']);results['2'].name.A={status:'miss',date:day(4),form:'CHILD-2b'};results['1'].sound.Q={status:'unsure',date:day(4),form:'S'};
+  assert.deepEqual(L.practiceSets(results,log,'1','name','mixed'),[['b','C','A','a','z']],'mixed Case order is A a B b …');
+  assert.deepEqual(L.practiceSets(results,log,'1','name','upper'),[['C','A']]);
+  assert.deepEqual(L.practiceSets(results,log,'1','name','lower'),[['b','a','z']]);
+  assert.deepEqual(L.practiceSets(results,log,'2','name','upper'),[['A']]);
+  assert.deepEqual(L.practiceSets(results,log,'1','sound','upper'),[['Q']]);
+});

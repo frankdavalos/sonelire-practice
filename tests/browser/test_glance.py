@@ -1,5 +1,5 @@
 """At a glance: the Results tab's summary of letters Correct, the Latest change and its groups (CONTEXT.md)."""
-from steps import save_check, text
+from steps import pressed, save_check, saved_data, seed, text
 
 
 def headline(page):
@@ -53,16 +53,32 @@ def test_summary_lines_name_recent_wins_slipped_back_and_still_learning_letters_
     assert lines(page) == ['Recent wins: B C'], 'a line with no letters is left out'
 
 
-def test_the_practice_button_names_up_to_five_letters_and_starts_their_deck(page):
+def test_the_practice_button_names_practice_set_1_and_starts_its_deck(page):
     page.click('#tabResults')
     assert page.locator('#practiceWeak').is_disabled(), 'nothing Needs practice yet'
+    assert text(page, '#practiceWeak') == 'Nothing needs practice'
     save_check(page, 'icin')  # A, C Incorrect; D Unsure
     assert text(page, '#practiceWeak') == 'Practice A, C, D →'
     page.click('#practiceWeak')
     assert text(page, '#counter') == '1 / 3'
-    save_check(page, 'iiiiii')
-    assert text(page, '#practiceWeak') == 'Practice 6 letters →'
+    save_check(page, 'iiiiii')  # B Slipped back, so it leads set 1 of [B A C] [D E F]
+    assert text(page, '#practiceWeak') == 'Practice B, A, C →'
 
+
+
+def test_the_practice_button_opens_set_1_with_the_results_tabs_case_and_skill(page):
+    seed(page, saved_data(results={('1', skill, letter): 'miss' for skill in ('name', 'sound') for letter in 'ABCDEFGHIJKabcdefghijk'}))
+    page.click('#filterGroup [data-filter=weak]')
+    page.click('#setGroup [data-set="3"]')
+    page.click('#tabResults')
+    page.click('#resultCase [data-value=lower]')
+    page.click('#resultSkill [data-value=sound]')
+    assert text(page, '#practiceWeak') == 'Practice a, b, c, d →'
+    page.click('#practiceWeak')
+    assert page.locator('#practice').is_visible()
+    for chosen in ('#filterGroup [data-filter=weak]', '#caseGroup [data-case=lower]', '#skillGroup [data-skill=sound]', '#setGroup [data-set="1"]'):
+        assert pressed(page, chosen), chosen
+    assert text(page, '#counter') == '1 / 4' and text(page, '#letter') in ('a', 'b', 'c', 'd')
 
 def cell(page, letter):
     return page.locator(f'#matrix [data-letter={letter}]')
