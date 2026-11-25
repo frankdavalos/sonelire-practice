@@ -13,10 +13,10 @@
     return withMap(results,saved.learner,saved.skill,map);
   }
   const needsPracticeMark=m=>m==='incorrect'||m==='unsure';
-  /* Each letter of the Case with its Mark (null when there is no Result), plus totals. Skip counts as Not assessed. */
+  /* Each letter of the Case with its Mark and last-checked date (both null when there is no Result), plus totals. Skip counts as Not assessed. */
   function summarize(results,learner,skill,c){
     const map=results[learner][skill]||{};
-    const letters=V.lettersFor(c).map(letter=>({letter,mark:map[letter]?V.fromStored(map[letter].status):null}));
+    const letters=V.lettersFor(c).map(letter=>{const r=map[letter];return {letter,mark:r?V.fromStored(r.status):null,date:r?r.date:null};});
     const correct=letters.filter(l=>l.mark==='correct').length,needing=letters.filter(l=>needsPracticeMark(l.mark)).length;
     return {letters,correct,needsPractice:needing,notAssessed:letters.length-correct-needing};
   }

@@ -1,5 +1,5 @@
 """Saved data: return links, unavailable storage, other tabs, and data saved before the refactor (docs/adr/0001)."""
-from steps import MAIN, UPPER, accept_next_dialog, pressed, results_code, saved_data, seed, stat, text
+from steps import MAIN, check_list, UPPER, accept_next_dialog, pressed, results_code, saved_data, seed, stat, text
 
 NO_STORAGE = "Object.defineProperty(window, 'localStorage', {get() { throw new DOMException('denied', 'SecurityError') }})"
 
@@ -56,3 +56,14 @@ def test_v1_scoring_draft_with_miss_marks_resumes_marking_and_saves_incorrect(pa
     saved = page.evaluate('JSON.parse(localStorage.getItem("sonelire-practice-v2"))')
     assert saved['results']['2']['name']['A']['status'] == 'miss', 'Incorrect is still stored as v1 "miss"'
     assert saved['draft'] is None
+
+
+def test_saved_data_with_no_check_log_key_shows_no_history_in_the_report(page):
+    seed(page, saved_data(results={('1', 'name', 'A'): 'miss', ('1', 'name', 'B'): 'correct'}))
+    assert page.evaluate('localStorage.getItem("sonelire-check-log-v1")') is None
+    page.click('#tabResults')
+    assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (1, 1), 'the saved Results still load'
+    assert check_list(page) == [] and page.locator('#checkListEmpty').is_visible()
+    assert not page.locator('#progressChart').is_visible()
+    assert not page.locator('#struggles').is_visible() and page.locator('#strugglesEmpty').is_visible()
+    assert page.locator('#stillNeedsPractice button, #improved li').count() == 0

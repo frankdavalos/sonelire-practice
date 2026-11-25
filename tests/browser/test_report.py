@@ -51,3 +51,21 @@ def test_struggled_before_says_so_when_nothing_was_missed_and_follows_the_learne
     assert letters(page, '#stillNeedsPractice') == ['A']
     page.select_option('#learner', '2')
     assert page.locator('#strugglesEmpty').is_visible(), "Child 1's struggles never show for Child 2"
+
+
+def test_struggled_before_follows_the_case_and_skill_selection(page):
+    save_check(page, 'ii')
+    save_check(page, 'i', case='lower', skill='sound')
+    page.click('#resultCase [data-value=upper]')
+    page.click('#resultSkill [data-value=name]')
+    assert letters(page, '#stillNeedsPractice') == ['A', 'B']
+    page.click('#resultCase [data-value=lower]')
+    assert page.locator('#strugglesEmpty').is_visible() and not page.locator('#struggles').is_visible()
+    page.click('#resultSkill [data-value=sound]')
+    assert letters(page, '#stillNeedsPractice') == ['a']
+    page.click('#resultCase [data-value=upper]')
+    assert page.locator('#strugglesEmpty').is_visible() and not page.locator('#struggles').is_visible()
+    page.click('#resultCase [data-value=mixed]')
+    assert letters(page, '#stillNeedsPractice') == ['a'], "a mixed selection spans both Cases of this Skill"
+    page.click('#resultSkill [data-value=name]')
+    assert letters(page, '#stillNeedsPractice') == ['A', 'B']

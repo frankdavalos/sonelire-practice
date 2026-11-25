@@ -9,6 +9,11 @@ def seeded_results(page):
     page.click('#tabResults')
 
 
+def cell(page, letter):
+    """The lines shown in one letter's cell of the Results grid."""
+    return page.locator(f'#matrix [data-letter={letter}]').inner_text().split('\n')
+
+
 def test_clear_these_results_removes_only_that_learner_skill_and_case(page):
     seeded_results(page)
     assert (stat(page, 'Correct'), stat(page, 'Needs practice')) == (1, 1)
@@ -41,3 +46,14 @@ def test_clearing_mixed_case_results_clears_both_cases(page):
     for case in ['upper', 'lower']:
         page.click(f'#resultCase [data-value={case}]')
         assert stat(page, 'Correct') + stat(page, 'Needs practice') == 0
+
+
+def test_each_letter_shows_when_it_was_last_checked_and_unchecked_letters_show_none(device):
+    page = device(1366, 1024, locale='en-GB', timezone_id='UTC').open()
+    saved = saved_data(results={('1', 'name', 'A'): 'correct', ('1', 'name', 'B'): 'skip'})
+    saved['results']['1']['name']['A']['date'] = '2026-11-12T18:45:09.123Z'
+    seed(page, saved)
+    page.click('#tabResults')
+    assert cell(page, 'A') == ['A', 'Correct', '12 Nov 2026']
+    assert cell(page, 'B') == ['B', 'Skipped', '1 Jan 2026']
+    assert cell(page, 'C') == ['C', 'Not checked']

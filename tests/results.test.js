@@ -24,9 +24,15 @@ const at=(status)=>({status,date:'2026-11-01T00:00:00.000Z',form:'F-1'});
 test('summarize gives each letter of the Case its Mark, and totals Correct, Needs practice and Not assessed',()=>{
   const results=empty();Object.assign(results['1'].name,{A:at('correct'),B:at('miss'),C:at('unsure'),D:at('skip'),a:at('miss')});
   const s=R.summarize(results,'1','name','upper');
-  assert.deepEqual(s.letters.slice(0,5),[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'},{letter:'C',mark:'unsure'},{letter:'D',mark:'skip'},{letter:'E',mark:null}]);
+  assert.deepEqual(s.letters.slice(0,5).map(({letter,mark})=>({letter,mark})),[{letter:'A',mark:'correct'},{letter:'B',mark:'incorrect'},{letter:'C',mark:'unsure'},{letter:'D',mark:'skip'},{letter:'E',mark:null}]);
   assert.equal(s.letters.length,26);
   assert.deepEqual({correct:s.correct,needsPractice:s.needsPractice,notAssessed:s.notAssessed},{correct:1,needsPractice:2,notAssessed:23});
+});
+
+test('summarize gives each letter its last-checked date as stored, or null when it has no Result',()=>{
+  const results=empty();Object.assign(results['1'].name,{A:{status:'correct',date:'2026-11-12T18:45:09.123Z',form:'F-3'},B:at('skip')});
+  const s=R.summarize(results,'1','name','upper');
+  assert.deepEqual(s.letters.slice(0,3).map(({letter,date})=>({letter,date})),[{letter:'A',date:'2026-11-12T18:45:09.123Z'},{letter:'B',date:'2026-11-01T00:00:00.000Z'},{letter:'C',date:null}]);
 });
 
 test('needsPractice lists the Incorrect and Unsure letters of the Case, in Case order',()=>{
