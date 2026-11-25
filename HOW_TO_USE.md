@@ -22,12 +22,13 @@ You can use the digital companion instead of paper. The child sees the letter on
    - **QR:** Open the iPad Camera, scan the phone's results QR and open the link in the same browser context as your unfinished check. The app opens **Enter results** with the code ready for review.
    - **Code:** Copy the code and transfer it privately (for example with a shared clipboard, if configured). On the original iPad scoring screen expand **Import phone companion results** and paste it into the text box.
    - **File:** Choose **Save code file** on the phone, transfer the small text file privately, then choose it in the iPad import panel.
+   - **Share:** If the phone can share files, choose **Share results** and AirDrop the text file to the iPad, then choose it in the iPad import panel. Use this when the check runs in the Home Screen app, which QR links can't reach.
 9. Select **Review and import marks**. Sonelire checks the form, order and response count, rejecting wrong-form codes or marks for letters not shown. If replacing conflicting entries, confirm only if intended. Review the populated marks, then select **Save results**.
 10. Use **Practice letters needing work** as before. Once the results are saved on the iPad, clear the companion record on your phone using **Clear this companion session**.
 
 **Important:** The two devices do not advance each other. Results codes and QR links are not encrypted. Treat them as private. Avoid sharing them in public messages. The phone companion does not identify the learner; the iPad attaches the validated marks to its own existing session.
 
-If the iPad Camera opens a browser without your draft, return to the original browser and paste the code or import the text file instead. A home-screen installation and Safari can have separate storage. If the companion is interrupted, scan the original QR again (the paused iPad screen has **Show phone companion QR again**). If local storage is unavailable, keep the phone page open. You can always use manual scoring or a paper companion sheet.
+If the iPad Camera opens a browser without your draft, return to the original browser and paste the code or import the text file (for example with **Share results**) instead. A home-screen installation and Safari can have separate storage. If the companion is interrupted, scan the original QR again (the paused iPad screen has **Show phone companion QR again**). If local storage is unavailable, keep the phone page open. You can always use manual scoring or a paper companion sheet.
 
 
 ## 1. Get started

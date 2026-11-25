@@ -1,6 +1,6 @@
 """The two-device Companion round trip, end to end: iPad presents, phone marks, QR link brings the Marks back."""
 import io
-from steps import accept_next_dialog, stat, text
+from steps import FILE_SHARING, accept_next_dialog, prepare, stat, text
 
 try:
     from PIL import Image
@@ -74,3 +74,29 @@ def test_companion_round_trip(ipad, phone):
     c.select_option('#learner', '1')
     c.click('#resultCase [data-value=mixed]')
     assert stat(c, 'Correct') == 51, 'Learners keep separate Results'
+
+
+def test_shared_results_file_imports_on_the_ipad_with_the_marks_the_qr_carries(ipad, phone):
+    a = ipad.open()
+    prepare(a)
+    a.click('#showCompanion')
+    phone.context.add_init_script(FILE_SHARING)
+    b = phone.open(a.locator('#companionLink').get_attribute('href'))
+    for score in ('correct', 'incorrect', 'unsure', 'skip'):
+        b.click(f'[data-score={score}]')
+    b.click('#transfer')
+    b.click('#share')
+    shared = b.wait_for_function('window.shared').json_value()[0]
+    assert shared['text'] == b.locator('#code').input_value(), 'the QR link carries this same Results code'
+
+    a.click('#begin')
+    for _ in range(3):
+        a.keyboard.press('ArrowRight')
+    a.click('#pause')
+    accept_next_dialog(a)
+    a.click('#finishEarly')
+    a.locator('#importPanel summary').click()
+    a.set_input_files('#importFile', files=[{'name': shared['name'], 'mimeType': shared['type'], 'buffer': shared['text'].encode()}])
+    a.click('#importButton')
+    assert text(a, '#scoredCount') == '4 / 4 marked'
+    assert a.eval_on_selector_all('#scoreList [aria-pressed=true]', 'bs => bs.map(b => b.dataset.value)') == ['correct', 'incorrect', 'unsure', 'skip']
