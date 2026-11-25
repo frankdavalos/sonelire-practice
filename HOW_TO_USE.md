@@ -19,16 +19,16 @@ You can use the digital companion instead of paper. The child sees the letter on
 6. When the presentation is complete, advance from the last letter on the iPad to **Enter results**. If stopping early, pause and end presentation; leave unreached letters unmarked on the phone.
 7. On the phone choose **Prepare results transfer**. You can return to edit any marks before transferring.
 8. Return the marks using one of these options:
-   - **QR:** Open the iPad Camera, scan the phone's results QR and open the link in the same browser context as your unfinished check. The app opens **Enter results** with the code ready for review.
+   - **QR:** Open the iPad Camera, scan the phone's results QR and open the link in the same browser context as your unfinished check. QR links open only in Safari, so this does not work when the check runs in the Home Screen app. The app opens **Enter results** with the code ready for review.
    - **Code:** Copy the code and transfer it privately (for example with a shared clipboard, if configured). On the original iPad scoring screen expand **Import phone companion results** and paste it into the text box.
-   - **File:** Choose **Save code file** on the phone, transfer the small text file privately, then choose it in the iPad import panel.
-   - **Share:** If the phone can share files, choose **Share results** and AirDrop the text file to the iPad, then choose it in the iPad import panel. Use this when the check runs in the Home Screen app, which QR links can't reach.
+   - **File:** Choose **Save code file** on the phone, transfer the small text file privately, then select **Choose code file** in the iPad import panel.
+   - **Share:** If the phone can share files, choose **Share results** and AirDrop the text file to the iPad, then select **Choose code file** in the iPad import panel. Use this when the check runs in the Home Screen app, which QR links can't reach (see [Install on the iPad Home Screen](#install-on-the-ipad-home-screen-recommended)).
 9. Select **Review and import marks**. Sonelire checks the form, order and response count, rejecting wrong-form codes or marks for letters not shown. If replacing conflicting entries, confirm only if intended. Review the populated marks, then select **Save results**.
 10. Use **Practice letters needing work** as before. Once the results are saved on the iPad, clear the companion record on your phone using **Clear this companion session**.
 
 **Important:** The two devices do not advance each other. Results codes and QR links are not encrypted. Treat them as private. Avoid sharing them in public messages. The phone companion does not identify the learner; the iPad attaches the validated marks to its own existing session.
 
-If the iPad Camera opens a browser without your draft, return to the original browser and paste the code or import the text file (for example with **Share results**) instead. A home-screen installation and Safari can have separate storage. If the companion is interrupted, scan the original QR again (the paused iPad screen has **Show phone companion QR again**). If local storage is unavailable, keep the phone page open. You can always use manual scoring or a paper companion sheet.
+If the iPad Camera opens a browser without your draft, return to the original browser and paste the code or import the text file (for example with **Share results**) instead. The Home Screen app and Safari have separate storage, so a check started in one cannot be finished in the other. If the companion is interrupted, scan the original QR again (the paused iPad screen has **Show phone companion QR again**). If local storage is unavailable, keep the phone page open. You can always use manual scoring or a paper companion sheet.
 
 
 ## 1. Get started
@@ -43,7 +43,32 @@ There are three main tabs:
 | **Assess** | Find out what your child can identify independently. |
 | **Results** | Review which letters are known and which need additional practice. |
 
-On iPad, you can optionally use Safari's Share menu to add the website to your Home Screen. This is a convenient shortcut, not a guarantee of offline use or shared storage with Safari. Choose one browser or Home Screen context and stick with it for consistent records.
+On a phone or computer, use the website in your usual browser and keep to the same one. On an iPad, install it to the Home Screen as described next.
+
+### Install on the iPad Home Screen (recommended)
+
+Safari can delete a website's saved data after 7 days of use without opening that site. An app on the Home Screen keeps its own count, and Sonelire Practice asks the iPad to keep its data each time it opens, so results are much less likely to disappear. Neither is a guarantee, so keep backups as well (see the end of this section).
+
+1. Open the website in Safari on the iPad.
+2. Tap *Share*, then *Add to Home Screen*, then *Add*.
+3. Open the Sonelire icon on the Home Screen. It opens full screen, without Safari's address bar, but still needs an internet connection. Use it from there from now on.
+
+The Home Screen app is a separate copy, with its own storage. Results and checks saved in Safari do not appear in it, and anything saved in it does not appear in Safari.
+
+**Move existing results in:** if you already used the website in Safari, bring those results across with a Backup file.
+
+1. In Safari, finish any unfinished check first: it is not in the Backup file. Then open **Results** and select **Export backup**. Save the Backup file to iCloud Drive or Files.
+2. In the Home Screen app, open **Results**, select **Restore from backup** and choose that file. Read the preview, then confirm. Restoring replaces the saved results and checks of both learners in the Home Screen app, and keeps any unfinished check there.
+
+**Get phone results back:** results QR links open only in Safari, never in the Home Screen app, so the iPad Camera cannot hand the phone's marks to a check running in the Home Screen app. Send a file instead:
+
+1. On the phone, choose **Prepare results transfer**, then **Share results** and AirDrop the text file to the iPad (or save it to iCloud Drive or Files).
+2. On the iPad's **Enter results** screen, expand **Import phone companion results**, select **Choose code file** and pick the file.
+3. Select **Review and import marks**, review the marks, then select **Save results**.
+
+If the phone cannot share files, use **Save code file** and move the file another way, or copy the code and paste it into the same panel.
+
+**Keep backups:** export a fresh Backup file to iCloud Drive regularly, for example after each check or once a week. It is the only copy that survives if the iPad clears the app's data or the app is removed from the Home Screen. If a saved check has gone more than 30 days without a backup, the **Results** tab shows a reminder until you export one.
 
 ## 2. Practice letters together
 
@@ -58,7 +83,7 @@ Open **Practice** and select the options that fit your child's needs.
 | **Sounds** | Reminds the adult to ask for or model a familiar letter sound. |
 | **All letters** | Reviews the entire selected alphabet deck. |
 | **Needs practice** | Shows only letters marked incorrect or unsure for this learner, case and skill. |
-| **Shuffle: on/off** | Chooses randomized or alphabetical order (paired uppercase/lowercase when mixed). |
+| **Shuffle** | Switches between randomized order (on) and alphabetical order (off), with uppercase and lowercase paired when mixed. |
 | **Focus mode** | Hides the main controls and enlarges the letter; use **Exit focus** to return. |
 
 Use **Previous**, **Next**, or **Start over**. Swipe left to advance and right to go back. In Focus mode, tap the card to advance. On a computer, use the left/right arrow keys or Space to navigate; Escape exits Focus mode. At the end of a practice deck, the next action begins another round.
@@ -137,6 +162,17 @@ For example, if the child identifies 20 of the 26 lowercase letters, gives incor
 
 A later completed check updates the recorded results for assessed letters. Skipping a letter or ending before reaching it preserves any previous result for that letter. The grid can therefore combine results from different checks; it is not necessarily a report of one complete assessment.
 
+Tap any letter in the grid to see its history: the date, form ID and mark from every saved check that included it.
+
+**Struggled before** looks back over every saved check for the selected case and skill:
+
+- **Still needs practice** lists letters whose latest mark is Incorrect or Unsure.
+- **Improved** lists letters that were Incorrect or Unsure in an earlier check and Correct since, with when they struggled and when they became correct. A letter that slips back to Incorrect or Unsure moves back to Still needs practice.
+
+Skipped letters are ignored here, as in the grid. Tap a letter in either list to see its history.
+
+**Progress** charts how many letters were correct after each check. The chart appears from the second saved check for the selected case and skill. Below it, the list of saved checks shows each check's date, case and counts of correct, needs practice and skipped letters.
+
 These are informal observations, not validated mastery levels, grade-level benchmarks or indicators of a reading disability.
 
 ## 6. Practice letters that need work
@@ -163,7 +199,7 @@ If a targeted deck is empty, celebrate the progress and periodically review fami
 
 Results and an unfinished check are saved in the current browser's local storage when available. You do not need to create an account or enter a child's real name.
 
-Use the same device, browser, browser profile and website address to access existing results. Another device will have its own records. There is no synchronization between devices; use **Export backup** on the Results tab to save a Backup file (for example to iCloud Drive or Files) and **Restore from backup** to bring it back. If a saved check has gone more than 30 days without a backup, the Results tab shows a reminder until you export one. Clearing website data may erase records permanently; private browsing can also make storage temporary. Do not use it for official school records.
+Use the same device, browser, browser profile and website address to access existing results. On an iPad, the Home Screen app counts as its own browser: it does not share results with Safari (see [Install on the iPad Home Screen](#install-on-the-ipad-home-screen-recommended)). Another device will have its own records. There is no synchronization between devices; use **Export backup** on the Results tab to save a Backup file (for example to iCloud Drive or Files) and **Restore from backup** to bring it back. If a saved check has gone more than 30 days without a backup, the Results tab shows a reminder until you export one. Clearing website data may erase records permanently; private browsing can also make storage temporary, and Safari can delete a website's data after 7 days of use without opening it. Do not use it for official school records.
 
 To reset a set of saved results intentionally, open **Results**, choose the correct learner, case and skill, then select **Clear these results**. Read the confirmation carefully: the selected results are deleted permanently, and those letters are also removed from every saved check, so Struggled before and Progress start fresh too. The confirmation says how many saved checks are affected and their dates; use **Export backup** first if you might want them back. Mixed case includes both uppercase and lowercase for that skill.
 
@@ -174,7 +210,7 @@ To reset a set of saved results intentionally, open **Results**, choose the corr
 | Needs practice is empty | Confirm the learner, case and Names/Sounds selection. Run a check or use All letters. |
 | Save results is disabled | Mark every displayed letter, using Skip if an item was not assessed. |
 | An unfinished check appears | Choose Resume check to continue, or Discard only if you no longer need the draft. |
-| Results seem missing | Confirm you are using the same website address, device, browser/profile, learner and skill. |
+| Results seem missing | Confirm you are using the same website address, device, browser/profile, learner and skill. On iPad, results saved in Safari do not appear in the Home Screen app (or the other way round); use Restore from backup with your latest Backup file. |
 | Letters look different | Connect to the internet and reload so the Andika font can load. |
 | Printing is unavailable | Copy the displayed order and form ID onto paper before beginning. |
 | Local storage warning appears | Use a normal browser window that allows site storage. The app still works in memory, but results may disappear on reload. |
