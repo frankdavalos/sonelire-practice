@@ -55,6 +55,9 @@ def test_every_page_open_asks_the_browser_once_to_keep_its_data(ipad):
 
 def test_page_loads_without_error_where_the_browser_cannot_keep_data(ipad):
     ipad.context.add_init_script(NO_STORAGE_MANAGER)
+    console_errors = []
+    ipad.context.on('console', lambda m: m.type == 'error' and console_errors.append(m.text))
     page = ipad.open()
     page.click('#next')
     assert text(page, '#counter') == '2 / 26'
+    assert all(e.startswith('Failed to load resource') for e in console_errors), 'only the aborted web font fails'
