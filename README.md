@@ -73,7 +73,7 @@ Open <http://localhost:8000/sonelire-practice.html>. For use on another device, 
 
 To publish updates using the existing GitHub Pages deployment:
 
-1. If any script changed (`vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js` or `libs/qr.js`), bump the release token: the `?v=` value on every local `<script src>` in both `sonelire-practice.html` and `companion.html`, for example `?v=2.1.1` to `?v=2.1.2`. GitHub Pages lets browsers cache each file for 10 minutes, so without a new token a new page can run with an old cached script. `tests/release-token.test.js` checks that every local script carries the same token. It can't tell whether you bumped it.
+1. If any script changed (`vocabulary.js`, `companion-protocol.js`, `check.js`, `results.js` or `libs/qr.js`), bump the release token: the `?v=` value on every `<script src>` in both `sonelire-practice.html` and `companion.html`, for example `?v=2.1.1` to `?v=2.1.2`. GitHub Pages lets browsers cache each file for 10 minutes, so without a new token a new page can run with an old cached script. `tests/release-token.test.js` checks that every script carries the same token. It can't tell whether you bumped it.
 2. Commit and push. The pre-push hook (see [Testing](#testing)) runs the suite first.
 
 ```bash
