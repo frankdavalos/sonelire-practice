@@ -103,8 +103,12 @@ A letter with no Result, or whose only Result is Skip (so no Standing); neither 
 _Avoid_: Not assessed, yet to check, unchecked, unknown
 
 **Practice deck**:
-An ordered set of letter cards for practice, either all letters of a Case or only those that Need practice.
+An ordered set of letter cards for practice, either all letters of a Case or one Practice set of the letters that Need practice.
 _Avoid_: Flashcards, lesson
+
+**Practice set**:
+At most five letters that Need practice for one Learner, Skill and Case. The letters that Need practice are lined up Slipped back first, then the rest in Case order, and split into the fewest sets of at most five, as evenly as possible (7 → 4 + 3). Worked out from Results and the Check log each time; never saved.
+_Avoid_: Batch, chunk, group, lesson, today's practice
 
 ### Companion transfer
 
@@ -140,6 +144,7 @@ _Avoid_: Sync, merge, upload
 - Within one Learner, Skill and Case, each letter is exactly one of **Recent win**, Correct (no group), **Slipped back**, **Still learning** or **Not checked yet**, decided by its **Standing** before and after the **Latest change**; every letter that Needs practice is either **Slipped back** or **Still learning**.
 - With only one Check there is no **Latest change** to compare against: no **Recent wins**, no **Slipped back**, and every letter that Needs practice is **Still learning**.
 - A **Practice deck** for "Needs practice" is derived from **Results**; practising never changes **Results**.
+- Every letter that Needs practice is in exactly one **Practice set**; a **Check** that changes **Results** can change every **Practice set**, which is how practice moves on to new letters.
 - A **Companion record** belongs to exactly one **Form** and knows nothing about the **Learner**.
 - An **Import** succeeds only when the **Results code's** **Form** matches the **Unfinished check's** **Form** and has no **Marks** beyond the **Shown count**.
 
