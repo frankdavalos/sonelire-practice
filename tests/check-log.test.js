@@ -49,3 +49,54 @@ test('nothing saved, an unknown version or an unreadable Check record restores a
   for(const stored of bad)assert.deepEqual(L.checks(L.restore(stored),'1','name','upper'),[],JSON.stringify(stored));
   assert.equal(L.checks(L.restore({version:1,checks:[good]}),'1','name','upper').length,1);
 });
+
+const logOf=(...saves)=>saves.reduce((log,[formId,date,marks,opts])=>L.record(log,completed(formId,marks,opts),date),L.empty());
+const day=n=>`2026-11-${String(n).padStart(2,'0')}T09:00:00.000Z`;
+
+test("a letter's history lists every Check record holding it, newest first, Skips included",()=>{
+  const log=logOf(
+    ['F-1',day(1),[{letter:'B',mark:'incorrect'},{letter:'C',mark:'correct'}]],
+    ['F-2',day(3),[{letter:'B',mark:'skip'}]],
+    ['F-3',day(2),[{letter:'B',mark:'correct'}],{c:'mixed'}],
+    ['F-4',day(4),[{letter:'B',mark:'incorrect'}],{learner:'2'}],
+    ['F-5',day(5),[{letter:'B',mark:'incorrect'}],{skill:'sound'}]);
+  assert.deepEqual(L.letterHistory(log,'1','name','B'),[
+    {date:day(3),formId:'F-2',mark:'skip'},{date:day(2),formId:'F-3',mark:'correct'},{date:day(1),formId:'F-1',mark:'incorrect'}]);
+  assert.deepEqual(L.letterHistory(log,'1','name','b'),[],'lowercase is a different letter');
+});
+
+test('struggles: letters still Incorrect or Unsure need practice; letters Correct after a struggle Improved, with dates',()=>{
+  const log=logOf(
+    ['F-1',day(1),[{letter:'B',mark:'incorrect'},{letter:'C',mark:'unsure'},{letter:'D',mark:'correct'}]],
+    ['F-2',day(2),[{letter:'B',mark:'unsure'},{letter:'C',mark:'unsure'}]],
+    ['F-3',day(3),[{letter:'B',mark:'correct'}]],
+    ['F-4',day(4),[{letter:'B',mark:'correct'},{letter:'A',mark:'incorrect'}]]);
+  assert.deepEqual(L.struggles(log,'1','name','upper'),{
+    stillNeedsPractice:['A','C'],
+    improved:[{letter:'B',firstStruggle:day(1),lastStruggle:day(2),correctSince:day(3)}]});
+});
+
+test('struggles: slipping back needs practice again; always Correct or only Skipped is in neither list; a Skip never changes standing',()=>{
+  const log=logOf(
+    ['F-1',day(1),[{letter:'B',mark:'incorrect'},{letter:'C',mark:'correct'},{letter:'D',mark:'skip'},{letter:'E',mark:'incorrect'}]],
+    ['F-2',day(2),[{letter:'B',mark:'correct'},{letter:'C',mark:'correct'},{letter:'D',mark:'skip'},{letter:'E',mark:'correct'}]],
+    ['F-3',day(3),[{letter:'B',mark:'incorrect'},{letter:'E',mark:'skip'},{letter:'F',mark:'unsure'}]],
+    ['F-4',day(4),[{letter:'F',mark:'skip'}]]);
+  assert.deepEqual(L.struggles(log,'1','name','upper'),{
+    stillNeedsPractice:['B','F'],
+    improved:[{letter:'E',firstStruggle:day(1),lastStruggle:day(1),correctSince:day(2)}]});
+});
+
+test('struggles count mixed Checks for their letters, list in Case order, and keep Learners and Skills apart',()=>{
+  const log=logOf(
+    ['MIX',day(1),[{letter:'Z',mark:'incorrect'},{letter:'z',mark:'unsure'},{letter:'A',mark:'unsure'}],{c:'mixed'}],
+    ['UP',day(2),[{letter:'Z',mark:'correct'}]],
+    ['CHILD-2',day(3),[{letter:'Q',mark:'incorrect'}],{learner:'2'}],
+    ['SOUND',day(4),[{letter:'Q',mark:'incorrect'}],{skill:'sound'}]);
+  const s=(...a)=>L.struggles(log,...a);
+  assert.deepEqual(s('1','name','upper'),{stillNeedsPractice:['A'],improved:[{letter:'Z',firstStruggle:day(1),lastStruggle:day(1),correctSince:day(2)}]});
+  assert.deepEqual(s('1','name','lower'),{stillNeedsPractice:['z'],improved:[]});
+  assert.deepEqual(s('1','name','mixed').stillNeedsPractice,['A','z']);
+  assert.deepEqual(s('2','name','upper'),{stillNeedsPractice:['Q'],improved:[]});
+  assert.deepEqual(s('1','sound','upper'),{stillNeedsPractice:['Q'],improved:[]});
+});

@@ -1,19 +1,5 @@
 """Check log: every saved Check is kept as a Check record and listed under Progress on the Results tab."""
-from steps import accept_next_dialog, present, stat
-
-
-def save_check(page, keys, **form):
-    """Present len(keys) letters, mark them with the keyboard (c/i/n/s) and save. Returns the form ID."""
-    form_id = present(page, shown=len(keys), **form)
-    page.focus('#scoreList [data-index="0"]')
-    for key in keys:
-        page.keyboard.press(key)
-    page.click('#saveScores')
-    return form_id
-
-
-def check_list(page):
-    return page.locator('#checkList li').all_inner_texts()
+from steps import accept_next_dialog, check_list, present, save_check, stat
 
 
 def test_saving_a_check_lists_it_under_progress_and_it_survives_a_reload(page):

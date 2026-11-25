@@ -55,6 +55,20 @@ def present(page, shown, **form):
     return form_id
 
 
+def save_check(page, keys, **form):
+    """Present len(keys) letters, mark them with the keyboard (c/i/n/s) and save. Returns the form ID."""
+    form_id = present(page, shown=len(keys), **form)
+    page.focus('#scoreList [data-index="0"]')
+    for key in keys:
+        page.keyboard.press(key)
+    page.click('#saveScores')
+    return form_id
+
+
+def check_list(page):
+    return page.locator('#checkList li').all_inner_texts()
+
+
 def results_code(form_id, marks, skill='name', case='upper', seq=UPPER):
     """A Results code for an alphabetical Form; marks is a string of C/I/N/S, padded with '-' (unmarked)."""
     return f'SON1R.{form_id}.{skill}.{case}.{seq}.{marks.ljust(len(seq), "-")}'

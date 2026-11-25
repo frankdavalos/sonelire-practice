@@ -66,6 +66,10 @@ _Avoid_: History (as a synonym for Results), audit log
 A letter whose Result is Incorrect or Unsure.
 _Avoid_: Weak, failed, missed
 
+**Improved**:
+A letter whose latest non-Skip Mark in the Check log is Correct after an earlier Incorrect or Unsure. A letter that slips back to Incorrect or Unsure Needs practice again.
+_Avoid_: Fixed, mastered, learned
+
 **Not assessed**:
 A letter with no Result, or whose only Result is Skip; neither a strength nor a weakness.
 _Avoid_: Unknown, unchecked

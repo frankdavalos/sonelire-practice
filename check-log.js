@@ -13,14 +13,38 @@
   function record(log,{learner,skill,case:c,formId,shownCount,marks},date){
     return make([...log.checks.filter(r=>r.formId!==formId),{date,learner,skill,case:c,formId,shownCount,marks}]);
   }
+  const forLearner=(log,learner,skill)=>log.checks.filter(r=>r.learner===learner&&r.skill===skill);
+  const newestFirst=(a,b)=>b.date.localeCompare(a.date);
   /* Checks for one Learner and Skill that include any of the Case's letters, newest first, with each Check's own counts. */
   function checks(log,learner,skill,c){
     const inCase=new Set(V.lettersFor(c));
-    return log.checks.filter(r=>r.learner===learner&&r.skill===skill&&r.marks.some(m=>inCase.has(m.letter)))
-      .sort((a,b)=>b.date.localeCompare(a.date)).map(r=>{
+    return forLearner(log,learner,skill).filter(r=>r.marks.some(m=>inCase.has(m.letter))).sort(newestFirst).map(r=>{
         const count=(...ms)=>r.marks.filter(m=>ms.includes(m.mark)).length;
         return {date:r.date,formId:r.formId,case:r.case,shownCount:r.shownCount,correct:count('correct'),needsPractice:count('incorrect','unsure'),skip:count('skip')};
       });
+  }
+  /* Every Check record holding the letter, newest first: [{date, formId, mark}], Skips included. */
+  function letterHistory(log,learner,skill,letter){
+    return forLearner(log,learner,skill).sort(newestFirst).flatMap(r=>r.marks.filter(m=>m.letter===letter).map(m=>({date:r.date,formId:r.formId,mark:m.mark})));
+  }
+  const struggle=m=>m==='incorrect'||m==='unsure';
+  /* Letters of the Case that were ever Incorrect or Unsure, by standing (latest non-Skip Mark):
+     {stillNeedsPractice:[letter], improved:[{letter, firstStruggle, lastStruggle, correctSince}]}, in Case order. */
+  function struggles(log,learner,skill,c){
+    const oldestFirst=forLearner(log,learner,skill).sort((a,b)=>-newestFirst(a,b)),result={stillNeedsPractice:[],improved:[]};
+    for(const letter of V.lettersFor(c)){
+      let standing=null,firstStruggle=null,lastStruggle=null,correctSince=null;
+      for(const r of oldestFirst)for(const {mark} of r.marks.filter(m=>m.letter===letter)){
+        if(mark==='skip')continue;
+        standing=mark;
+        if(struggle(mark)){firstStruggle??=r.date;lastStruggle=r.date;correctSince=null}
+        else correctSince??=r.date;
+      }
+      if(!firstStruggle)continue;
+      if(struggle(standing))result.stillNeedsPractice.push(letter);
+      else result.improved.push({letter,firstStruggle,lastStruggle,correctSince});
+    }
+    return result;
   }
   const toStored=log=>({version:1,lastBackup:null,checks:log.checks.map(r=>({...r,marks:r.marks.map(m=>({...m}))}))});
   const isText=s=>typeof s==='string'&&s.length>0;
@@ -32,5 +56,5 @@
     if(stored?.version!==1||!Array.isArray(stored.checks)||!stored.checks.every(readable))return empty();
     return make(stored.checks);
   }
-  root.SonelireCheckLog=Object.freeze({empty,record,checks,toStored,restore});
+  root.SonelireCheckLog=Object.freeze({empty,record,checks,letterHistory,struggles,toStored,restore});
 })(globalThis);
